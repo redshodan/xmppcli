@@ -1,4 +1,5 @@
 import re
+from xmppcli import logEx
 
 
 __all__ = ["Attr", "Elem", "DumbParser"]
@@ -138,7 +139,6 @@ class DumbParser(object):
             elif c == ">":
                 if not self.closing_tag:
                     self.in_cdata = 1
-                self.closing_tag = 0
                 self.cur_attr_name = ""
                 self.cur_attr_val = ""
                 if self.in_name:
@@ -150,6 +150,7 @@ class DumbParser(object):
                 self.cur_name = ""
                 self.in_name = 1
                 self.in_cdata = 0
+                self.closing_tag = 0
             elif self.closing_tag:
                 pass
             elif ((c == " ") or (c == "\t") or (c == "\r") or (c == "\n")):
@@ -226,7 +227,7 @@ class DumbParser(object):
                     return recursor(elem.children[-1:][0], syn, target)
                 else:
                     return elem, syn
-            if len(self.root.children):
+            if ((self.cur_elem != self.root) and len(self.root.children)):
                 if self.closing_tag:
                     target = self.prev_elem
                 else:
@@ -239,6 +240,8 @@ class DumbParser(object):
                        if stanza.startswith(text)]
                 if len(ret) == 1:
                     return [ret[0] + " "]
+                else:
+                    return ret
             if self.in_name:
                 ret = [e.name for e in syn.children
                        if e.name.startswith(text)]
@@ -264,8 +267,10 @@ class DumbParser(object):
             elif self.closing_tag:
                 if self.last_non_space_c2 == "<":
                     return [syn.name + ">"]
-                else:
+                elif self.last_non_space_c == "/":
                     return [">"]
+                else:
+                    return []
             elif self.in_cdata:
                 if text in syn.cdata:
                     return [text + "</" + syn.name + ">"]
@@ -281,8 +286,4 @@ class DumbParser(object):
                 else:
                     return [" " + i for i in ret]
         except Exception, e:
-            try:
-                print
-                print repr(e)
-            except Exception, e:
-                print e
+            logEx(e)

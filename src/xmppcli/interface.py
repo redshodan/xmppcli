@@ -1,5 +1,6 @@
 import cmd, re
 from xmppcli.parser import *
+from xmppcli import logEx
 
 
 __all__ = ["ansiColor", "Interface", "StanzaHandler"]
@@ -110,19 +111,17 @@ class Interface(cmd.Cmd):
             parser.parse(" ".join(args[1:]))
             return parser.complete(text)
         except Exception, e:
-            print
-            print repr(e)
+            logEx(e)
 
     def completedefault(self, text, line, begidx, endix):
         try:
             if not line.startswith("<"):
                 return []
-            parser = DumbParser(True)
+            parser = DumbParser()
             parser.parse(line)
             return parser.complete(text)
         except Exception, e:
-            print
-            print repr(e)
+            logEx(e)
         return []
 
     def default(self, line):
@@ -143,8 +142,7 @@ class Interface(cmd.Cmd):
         except KeyboardInterrupt:
             print
         except Exception, e:
-            print
-            print repr(e)
+            logEx(e)
 
     ###
     ### Command functions
@@ -161,9 +159,3 @@ class Interface(cmd.Cmd):
 
     def complete_presence(self, text, line, begidx, endix):
         return self.arg_complete(text, line, begidx, endix)
-
-
-#         except Exception, e:
-#             import traceback
-#             print traceback.print_exc()
-#             print e
