@@ -1,0 +1,11 @@
+#!/bin/env python
+
+from xmppcli import *
+
+
+def run():
+    handler = StanzaHandler()
+    ui = Interface(handler, {"hostname" : "test.com"})
+    ui.run()
+
+run()
