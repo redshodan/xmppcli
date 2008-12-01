@@ -25,42 +25,13 @@ def logEx(e):
 def run():
     import thread
     client = XMPPClient()
-    thread.start_new_thread(XMPPClient.run, (client,))
     ui = Interface(client, client.stream_info)
+    client.setUI(ui)
+    thread.start_new_thread(XMPPClient.run, (client,))
     ui.run()
-
-_ansi_colors = \
-{
-    "BLACK" : "\033[30m",
-    "RED" : "\033[31m",
-    "GREEN" : "\033[32m",
-    "YELLOW" : "\033[33m",
-    "BLUE" : "\033[34m",
-    "MAGENTA" : "\033[35m",
-    "CYAN" : "\033[36m",
-    "WHITE" : "\033[37m",
-
-    "BLACKBG" : "\033[40m",
-    "REDBG" : "\033[41m",
-    "GREENBG" : "\033[42m",
-    "YELLOWBG" : "\033[43m",
-    "BLUEBG" : "\033[44m",
-    "MAGENTABG" : "\033[45m",
-    "CYANBG" : "\033[46m",
-    "WHITEBG" : "\033[47m",
-
-    "RESET" : "\033[0;0m",
-    "BOLD" : "\033[1m",
-    "REVERSE" : "\033[2m"
-}
-
-def ansiColor(name):
-    if name in _ansi_colors:
-        return _ansi_colors[name]
-    else:
-        return ""
 
 
 from .parser import Attr, Elem, DumbParser
-from .interface import Interface, StanzaHandler
+from .interface import Interface
 from .client import XMPPClient
+from . import parser, interface, client, glooxutils

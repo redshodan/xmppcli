@@ -14,23 +14,44 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-import cmd, re
+import cmd, re, readline
 from xmppcli.parser import *
 from xmppcli import logEx
 
 
-__all__ = ["ansiColor", "Interface", "StanzaHandler"]
+__all__ = ["Interface", "StanzaHandler"]
 
 
-class StanzaHandler(object):
-    def handlePresence(self, argmap):
-        print "handlePresence:", argmap
+_ansi_colors = \
+{
+    "BLACK" : "\033[30m",
+    "RED" : "\033[31m",
+    "GREEN" : "\033[32m",
+    "YELLOW" : "\033[33m",
+    "BLUE" : "\033[34m",
+    "MAGENTA" : "\033[35m",
+    "CYAN" : "\033[36m",
+    "WHITE" : "\033[37m",
 
-    def handleMessage(self, argmap):
-        print "handleMessage:", argmap
+    "BLACKBG" : "\033[40m",
+    "REDBG" : "\033[41m",
+    "GREENBG" : "\033[42m",
+    "YELLOWBG" : "\033[43m",
+    "BLUEBG" : "\033[44m",
+    "MAGENTABG" : "\033[45m",
+    "CYANBG" : "\033[46m",
+    "WHITEBG" : "\033[47m",
 
-    def handleIQ(self, argmap):
-        print "handleIQ:", argmap
+    "RESET" : "\033[0;0m",
+    "BOLD" : "\033[1m",
+    "REVERSE" : "\033[2m"
+}
+
+def ansiColor(name):
+    if name in _ansi_colors:
+        return _ansi_colors[name]
+    else:
+        return ""
 
 
 class Interface(cmd.Cmd):
@@ -50,6 +71,8 @@ class Interface(cmd.Cmd):
         self.user_rawinput = True
         self.handler = handler
         self.stream_info = stream_info
+        self.rl_prompt = False
+        readline.set_startup_hook(self.rlStartup)
 
     def cleanup(self):
         import termios, sys
@@ -102,7 +125,7 @@ class Interface(cmd.Cmd):
         try:
             if not line.startswith("<"):
                 return []
-            parser = DumbParser()
+            parser = DumbParser(True)
             parser.parse(line)
             return parser.complete(text)
         except Exception, e:
@@ -110,9 +133,7 @@ class Interface(cmd.Cmd):
         return []
 
     def default(self, line):
-        print
-        print "DEFAULT", line
-        print
+        self.handler.handleUIXML(line)
 
     def do_EOF(self, arg):
         print
@@ -129,6 +150,21 @@ class Interface(cmd.Cmd):
         except Exception, e:
             logEx(e)
 
+    def rlStartup(self):
+        self.rl_prompt = True
+
+    def handleIncomingXML(self, xml):
+        if self.rl_prompt:
+            self.rl_prompt = False
+            print
+        print ansiColor("RED") + "<<<< " + xml + ansiColor("RESET")
+
+    def handleOutgoingXML(self, xml):
+        if self.rl_prompt:
+            self.rl_prompt = False
+            print
+        print ansiColor("CYAN") + ">>>> " + xml + ansiColor("RESET")
+
     ###
     ### Command functions
     ###
@@ -140,7 +176,8 @@ class Interface(cmd.Cmd):
         argmap = self.collate_args(arg, self._presence_args,
                                    self.help_presence)
         if argmap:
-            self.handler.handlePresence(argmap)
+            self.handler.handleUIPresence(argmap)
 
     def complete_presence(self, text, line, begidx, endix):
         return self.arg_complete(text, line, begidx, endix)
+

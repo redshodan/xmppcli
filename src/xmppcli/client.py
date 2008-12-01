@@ -14,8 +14,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-import gloox, sys, time, readline
+import gloox, sys, time, thread
 from select import select
+from xmppcli import glooxutils
 from xmppcli import *
 
 
@@ -33,6 +34,11 @@ class XMPPClient(gloox.MessageHandler, gloox.LogHandler):
         self.client.registerMessageHandler(self)
         self.client.logInstance().registerLogHandler(gloox.LogLevelDebug,
                                                      gloox.LogAreaAll, self)
+        self.out_buffer = []
+        self.lock = thread.allocate_lock()
+
+    def setUI(self, ui):
+        self.ui = ui
 
     def run(self):
         try:
@@ -43,10 +49,29 @@ class XMPPClient(gloox.MessageHandler, gloox.LogHandler):
             ret = gloox.ConnNoError
             while ret == gloox.ConnNoError:
                 ret = self.client.recv(50000)
+                self.sendElems()
                 time.sleep(0.001)
         except Exception, e:
             logEx(e)
 
+    def sendElems(self):
+        self.lock.acquire()
+        for xml in self.out_buffer:
+            elems = glooxutils.parse(xml)
+            if len(elems):
+                for elem in elems:
+                    self.client.send(elem.clone())
+            else:
+                print "Invalid XML"
+        del self.out_buffer[:]
+        self.lock.release()
+
+    def queueXML(self, xml):
+        self.lock.acquire()
+        self.out_buffer.append(xml)
+        self.lock.release()
+
+    ### gloox handlers
     def handleMessage(self, stanza, session):
         try:
             print stanza.xml()
@@ -56,8 +81,23 @@ class XMPPClient(gloox.MessageHandler, gloox.LogHandler):
     def handleLog(self, level, area, message):
         try:
             if area & gloox.LogAreaXmlIncoming:
-                print ansiColor("RED") + "<<<< " + message + ansiColor("RESET")
+                self.ui.handleIncomingXML(message)
             elif area & gloox.LogAreaXmlOutgoing:
-                print ansiColor("CYAN") + ">>>> " + message + ansiColor("RESET")
-        except Exception, e:
+                self.ui.handleOutgoingXML(message)
+        except Exception,e :
             logEx(e)
+
+    ### Interface handlers
+    def handleUIPresence(self, argmap):
+        print "handlePresence:", argmap
+
+    def handleUIMessage(self, argmap):
+        print "handleMessage:", argmap
+
+    def handleUIIQ(self, argmap):
+        print "handleIQ:", argmap
+
+    def handleUIXML(self, xml):
+        print "handleXML:", xml
+        #self.client.send(gloox.Tag("presence").clone())
+        self.queueXML(xml)

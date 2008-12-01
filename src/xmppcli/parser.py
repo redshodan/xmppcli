@@ -110,6 +110,7 @@ class DumbParser(object):
         self.in_attr_val = 0
         self.closing_tag = 0
         self.in_cdata = 0
+        self.cdata = ""
         self.last_c = ""
         self.last_non_space_c = ""
         self.last_non_space_c2 = ""
@@ -171,6 +172,8 @@ class DumbParser(object):
                 self.cur_name = ""
                 self.in_name = 1
                 self.in_cdata = 0
+                self.cur_elem.cdata.append(self.cdata)
+                self.cdata = ""
                 self.closing_tag = 0
             elif self.closing_tag:
                 pass
@@ -215,7 +218,7 @@ class DumbParser(object):
                 elif self.in_attr_val:
                     self.cur_attr_val += c
                 elif self.in_cdata:
-                    pass
+                    self.cdata += c
                 else:
                     self.in_attr_name = 1
                     self.cur_attr_name = c
@@ -295,10 +298,13 @@ class DumbParser(object):
                             if ((not text) or
                                 (text and i.name.startswith(text)))]
             elif self.in_cdata:
-                if text in syn.cdata:
+                if not len(syn.cdata):
+                    return ["<"]
+                elif text in syn.cdata:
                     return [text + "</" + syn.name + ">"]
-                return [cdata for cdata in syn.cdata
-                        if cdata.startswith(text)]
+                else:
+                    return [cdata for cdata in syn.cdata
+                            if cdata.startswith(text)]
             else:
                 ret = [attr.name for attr in syn.attrs.values()
                        if attr.name.startswith(text)]
