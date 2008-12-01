@@ -1,4 +1,4 @@
-import re
+import re, readline
 from xmppcli import logEx
 
 
@@ -81,6 +81,7 @@ class DumbParser(object):
 
     def __init__(self, debug = False):
         self.root = Elem("root")
+        self.root.parent = self.root
         self.cur_elem = self.root
         self.prev_elem = None
         self.last_elem = None
@@ -137,8 +138,12 @@ class DumbParser(object):
                 else:
                     pass
             elif c == ">":
-                if not self.closing_tag:
+                if self.closing_tag:
+                    self.prev_elem = self.cur_elem
+                    self.cur_elem = self.cur_elem.parent
+                else:
                     self.in_cdata = 1
+                self.in_attr_name = 0
                 self.cur_attr_name = ""
                 self.cur_attr_val = ""
                 if self.in_name:
@@ -180,8 +185,6 @@ class DumbParser(object):
                                              parent=self.cur_elem)
                 self.in_attr_name = 0
                 self.closing_tag = 1
-                self.prev_elem = self.cur_elem
-                self.cur_elem = self.cur_elem.parent
             elif c == "=":
                 if self.in_attr_name:
                     self.in_attr_name = 0
@@ -241,6 +244,8 @@ class DumbParser(object):
                 if len(ret) == 1:
                     return [ret[0] + " "]
                 else:
+                    if self.last_non_space_c == ">":
+                        readline.insert_text("<")
                     return ret
             if self.in_name:
                 ret = [e.name for e in syn.children
@@ -267,10 +272,12 @@ class DumbParser(object):
             elif self.closing_tag:
                 if self.last_non_space_c2 == "<":
                     return [syn.name + ">"]
-                elif self.last_non_space_c == "/":
-                    return [">"]
                 else:
-                    return []
+                    if self.last_non_space_c == "/":
+                        return [">"]
+                    return [i.name for i in self.cur_elem.parent.children
+                            if ((not text) or
+                                (text and i.name.startswith(text)))]
             elif self.in_cdata:
                 if text in syn.cdata:
                     return [text + "</" + syn.name + ">"]

@@ -62,6 +62,7 @@ class Interface(cmd.Cmd):
         atexit.register(self.cleanup)
 
         cmd.Cmd.__init__(self)
+        self.prompt = ">>> "
         self.user_rawinput = True
         self.handler = handler
         self.stream_info = stream_info
