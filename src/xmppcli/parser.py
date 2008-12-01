@@ -94,6 +94,19 @@ _stanzas = \
 }
 
 class DumbParser(object):
+    STATE_NONE = 0
+    STATE_NAME = 1
+    STATE_ATTR_NAME = 2
+    STATE_ATTR_VAL = 3
+    STATE_CLOSING = 5
+    STATE_CDATA = 6
+
+    _states = \
+    {
+        STATE_NONE : "none", STATE_NAME : "name", STATE_ATTR_NAME : "attr_name",
+        STATE_ATTR_VAL : "attr_val", STATE_CLOSING : "closing",
+        STATE_CDATA : "cdata"
+    }
 
     def __init__(self, debug = False):
         self.root = Elem("root")
@@ -101,19 +114,15 @@ class DumbParser(object):
         self.cur_elem = self.root
         self.prev_elem = None
         self.last_elem = None
-        self.in_quote = 0
         self.cur_name = ""
-        self.in_name = 0
         self.cur_attr_name = ""
-        self.in_attr_name = 0
         self.cur_attr_val = ""
-        self.in_attr_val = 0
-        self.closing_tag = 0
-        self.in_cdata = 0
         self.cdata = ""
-        self.last_c = ""
-        self.last_non_space_c = ""
-        self.last_non_space_c2 = ""
+        self.last_c = " "
+        self.last_non_space_c = " "
+        self.last_non_space_c2 = " "
+        self.quote = 0
+        self.state = self.STATE_NONE
         self.debug = debug
 
     def summarize(self, c):
@@ -122,13 +131,18 @@ class DumbParser(object):
         if not c:
             print
             print "FINAL STATE"
-        print c, "in_quote:", self.in_quote,
-        print "closing_tag", self.closing_tag, "in_name", self.in_name,
-        print "in_attr_name", self.in_attr_name,
-        print "in_attr_val", self.in_attr_val, "in_cdata", self.in_cdata,
+        state = self._states[self.state]
+        for i in range(10 - len(state)):
+            state = state + " "
+        if c == None:
+            print " ",
+        else:
+            print c,
+        print "state", state, "quote", self.quote, "last_c", self.last_c,
+        print "last_nsc", self.last_non_space_c,
+        print "last_nsc2", self.last_non_space_c2,
         print "cur_name:", self.cur_name, "cur_attr_name", self.cur_attr_name,
-        print "cur_attr_val", self.cur_attr_val, "last_c", self.last_c,
-        print "last_nsc", self.last_non_space_c
+        print "cur_attr_val", self.cur_attr_val
 
     def parse(self, val):
         for c in val:
@@ -137,90 +151,71 @@ class DumbParser(object):
                 self.last_non_space_c2 = self.last_non_space_c
             self.summarize(c)
             if ((c == "\"") or (c == "\'")):
-                if self.in_quote == c:
-                    self.in_quote = 0
-                    if self.in_attr_val:
-                        self.in_attr_val = 0
+                if self.quote == c:
+                    self.quote = 0
+                    if self.state == self.STATE_ATTR_VAL:
+                        self.state = self.STATE_ATTR_NAME
                         self.cur_elem.attrs[self.cur_attr_name] = \
                                self.cur_attr_val
                         self.cur_attr_name = ""
                         self.cur_attr_val = ""
-                elif self.in_quote:
+                elif self.quote:
                     pass
                 else:
-                    self.in_quote = c
-            elif self.in_quote:
-                if self.in_attr_val:
+                    self.quote = c
+            elif self.quote:
+                if self.state == self.STATE_ATTR_VAL:
                     self.cur_attr_val += c
                 else:
                     pass
             elif c == ">":
-                if self.closing_tag:
-                    self.prev_elem = self.cur_elem
-                    self.cur_elem = self.cur_elem.parent
-                else:
-                    self.in_cdata = 1
-                self.in_attr_name = 0
                 self.cur_attr_name = ""
                 self.cur_attr_val = ""
-                if self.in_name:
-                    self.in_name = 0
-                    if len(self.cur_name):
-                        self.cur_elem = Elem(self.cur_name,
-                                             parent=self.cur_elem)
+                if ((self.state == self.STATE_NAME) and len(self.cur_name)):
+                    self.cur_elem = Elem(self.cur_name, parent=self.cur_elem)
+                if self.state == self.STATE_CLOSING:
+                    self.prev_elem = self.cur_elem
+                    self.cur_elem = self.cur_elem.parent
+                self.state = self.STATE_CDATA
             elif c == "<":
                 self.cur_name = ""
-                self.in_name = 1
-                self.in_cdata = 0
-                self.cur_elem.cdata.append(self.cdata)
+                self.state = self.STATE_NAME
+                if len(self.cdata):
+                    self.cur_elem.cdata.append(self.cdata)
                 self.cdata = ""
-                self.closing_tag = 0
-            elif self.closing_tag:
+            elif self.state == self.STATE_CLOSING:
                 pass
             elif ((c == " ") or (c == "\t") or (c == "\r") or (c == "\n")):
                 if ((self.last_c == " ") or (self.last_c == "\t") or
                     (self.last_c == "\r") or (self.last_c == "\n")):
                     pass
-                if self.in_name:
-                    self.in_name = 0
-                    self.in_attr_name = 1
+                if self.state == self.STATE_NAME:
+                    self.state = self.STATE_ATTR_NAME
                     self.cur_attr_name = ""
                     self.cur_attr_value = ""
                     if len(self.cur_name):
                         self.cur_elem = Elem(self.cur_name,
                                              parent=self.cur_elem)
-                elif self.in_attr_name:
-                    self.in_attr_name = 0
-                    self.cur_elem.attrs[self.cur_attr_name] = None
-                else:
-                    self.in_attr_name = 1
-                    self.cur_attr_name = ""
-                    self.cur_attr_value = ""
             elif c == "/":
-                if self.in_name:
-                    self.in_name = 0
-                    if len(self.cur_name):
-                        self.cur_elem = Elem(self.cur_name,
-                                             parent=self.cur_elem)
-                self.in_attr_name = 0
-                self.closing_tag = 1
+                if ((self.state == self.STATE_NAME) and len(self.cur_name)):
+                    self.cur_elem = Elem(self.cur_name, parent=self.cur_elem)
+                self.state = self.STATE_CLOSING
             elif c == "=":
-                if self.in_attr_name:
-                    self.in_attr_name = 0
+                if self.state == self.STATE_ATTR_NAME:
                     self.cur_elem.attrs[self.cur_attr_name] = None
-                self.in_attr_val = 1
                 self.cur_attr_val = ""
+                self.state = self.STATE_ATTR_VAL
             else:
-                if self.in_name:
+                if self.state == self.STATE_NAME:
                     self.cur_name += c
-                elif self.in_attr_name:
+                elif self.state == self.STATE_ATTR_NAME:
                     self.cur_attr_name += c
-                elif self.in_attr_val:
+                elif self.state == self.STATE_ATTR_VAL:
                     self.cur_attr_val += c
-                elif self.in_cdata:
+                elif self.state == self.STATE_CDATA:
                     self.cdata += c
                 else:
-                    self.in_attr_name = 1
+                    self.state = self.STATE_ATTR_NAME
                     self.cur_attr_name = c
             self.last_c = c
             if ((c != " ") and (c != "\t") and (c != "\r") and (c != "\n")):
@@ -250,10 +245,11 @@ class DumbParser(object):
                 else:
                     return elem, syn
             if ((self.cur_elem != self.root) and len(self.root.children)):
-                if self.closing_tag:
+                if self.state == self.STATE_CLOSING:
                     target = self.prev_elem
                 else:
                     target = None
+                target = self.cur_elem
                 elem, syn = recursor(self.root.children[-1:][0], None, target)
             else:
                 elem, syn = None, None
@@ -266,14 +262,18 @@ class DumbParser(object):
                     if self.last_non_space_c == ">":
                         readline.insert_text("<")
                     return ret
-            if self.in_name:
+            if self.state == self.STATE_NAME:
                 ret = [e.name for e in syn.children
                        if e.name.startswith(text)]
                 if len(ret) == 1:
                     return [ret[0] + " "]
                 else:
                     return ret
-            elif self.in_attr_name:
+            elif self.state == self.STATE_ATTR_NAME:
+                if len(syn.attrs) == 0:
+                    return [">"]
+                elif ((self.last_c == "'") or (self.last_c == '"')):
+                    return [" "]
                 ret = [attr.name for attr in syn.attrs.values()
                        if attr.name.startswith(text)]
                 if text in ret:
@@ -282,22 +282,27 @@ class DumbParser(object):
                     return [ret[0] + "='"]
                 else:
                     return ret
-            elif self.in_attr_val:
+            elif self.state == self.STATE_ATTR_VAL:
                 attr = [attr for attr in syn.attrs.values()
                         if attr.name == self.cur_attr_name]
                 if len(attr) and len(attr[0].values):
                     return [val for val in attr[0].values
                             if val.startswith(text)]
-            elif self.closing_tag:
+            elif self.state == self.STATE_CLOSING:
                 if self.last_non_space_c2 == "<":
                     return [syn.name + ">"]
                 else:
                     if self.last_non_space_c == "/":
                         return [">"]
-                    return [i.name for i in self.cur_elem.parent.children
-                            if ((not text) or
-                                (text and i.name.startswith(text)))]
-            elif self.in_cdata:
+                    if self.last_non_space_c == ">":
+                        return [i.name for i in self.cur_elem.children
+                                if ((not text) or
+                                    (text and i.name.startswith(text)))]
+                    else:
+                        return [i.name for i in self.cur_elem.parent.children
+                                if ((not text) or
+                                    (text and i.name.startswith(text)))]
+            elif self.state == self.STATE_CDATA:
                 if not len(syn.cdata):
                     return ["<"]
                 elif text in syn.cdata:

@@ -125,7 +125,7 @@ class Interface(cmd.Cmd):
         try:
             if not line.startswith("<"):
                 return []
-            parser = DumbParser(True)
+            parser = DumbParser()
             parser.parse(line)
             return parser.complete(text)
         except Exception, e:
