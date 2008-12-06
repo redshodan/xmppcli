@@ -100,7 +100,7 @@ def generateSyntax(parser, name, ns, sparent):
 
 def _recursor(schema, xelem, sparent, ns):
     if xelem.name == "xs:attribute":
-        return _parseAttribute(schema, xelem, sparent)
+        return _parseAttribute(schema, xelem, sparent, ns)
     elif "ref" in xelem.attrs:
         name = xelem.attrs["ref"].value()
         ref = _findRef(schema, name)
@@ -126,7 +126,7 @@ def _parseRestriction(schema, xelem):
             values.append(xchild.attrs["value"].value())
     return values
 
-def _parseAttribute(schema, xelem, selem):
+def _parseAttribute(schema, xelem, selem, ns):
     if (("use" in xelem.attrs) and (xelem.attrs["use"].value() == "required")):
         required = True
     else:
@@ -135,11 +135,11 @@ def _parseAttribute(schema, xelem, selem):
         ref = _findRef(schema, xelem.attrs["ref"].values[0])
         sattr = Attr(ref.name, ref.values, required, ref.vtype)
     else:
-        sattr = Attr(xelem.attrs["name"].value(),
+        sattr = Attr(xelem.nsed(ns).attrs["name"].value(),
                      _parseRestriction(schema, xelem), required,
                      _parseType(xelem))
     if selem:
-        selem.attrs[sattr.name] = sattr
+        selem.nsed(ns).attrs[sattr.name] = sattr
     return sattr
 
 def _parseType(xelem):
