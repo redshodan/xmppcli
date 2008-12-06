@@ -29,14 +29,23 @@ class Attr(object):
         else:
             self.values = []
 
-class Elem(object):
-    def __init__(self, name, attrs = None, cdata = None, children = None,
-                 parent = None):
-        self.name = name
+class NSed(object):
+    def __init__(self, ns = None, attrs = None, cdata = None, children = None):
+        if ns is None:
+            self.nsname = "xmlns"
+            self.ns = ns
+        elif ns is tuple:
+            self.nsname = ns[0]
+            self.ns = ns[1]
+        else:
+            self.nsname = "xmlns"
+            self.ns = ns
         self.attrs = {}
         if attrs:
             for attr in attrs:
                 self.attrs[attr.name] = attr
+        if self.ns:
+            self.attrs[self.nsname] = Attr(self.nsname, [ns])
         if cdata:
             self.cdata = cdata
         else:
@@ -45,53 +54,43 @@ class Elem(object):
             self.children = children
         else:
             self.children = []
+
+class Elem(object):
+    def __init__(self, name, nsmap = None, parent = None, multi=False):
+        self.name = name
+        self.default_nsed = NSed()
+        self.nsmap = {}
+        if nsmap:
+            for nsed in nsmap:
+                if nsed.ns:
+                    self.nsmap[nsed.ns] = nsed
+                else:
+                    self.default_nsed = nsed
         self.parent = parent
         if self.parent:
-            self.parent.children.append(self)
+            self.parent.nsed().children.append(self)
+        self.multi = multi
+
+    def nsed(self, ns = None):
+        try:
+            if ns:
+                return self.nsmap[ns]
+        except KeyError:
+            pass
+        return self.default_nsed
 
     def doPrint(self, indent = "", recurse = True):
-        print indent, self, self.name, ":", self.attrs, ":", self.children, ":",
+        print indent, self, self.name, ":", self.nsed().attrs, ":",
+        print self.nsed().children, ":",
         if self.parent:
             print self.parent.name, self.parent
         else:
             print
         if recurse:
-            for child in self.children:
+            for child in self.nsed().children:
                 child.doPrint(indent + "  ", False)
 
-_stanza_error = Elem("error", [Attr("code"),
-                               Attr("type", ["auth", "cancel", "continue",
-                                             "modify", "wait"])])
-_stanzas = \
-{
-    "presence" : \
-    Elem("presence",
-         [Attr("to"), Attr("from"), Attr("xmlns"), Attr("xml:lang"),
-          Attr("type", ["error", "probe", "subscribe", "subscribed",
-                        "unsubscribe", "unsubscribed"])],
-         [],
-         [Elem("show", None, ["away", "chat", "dnd", "xa"]),
-          Elem("status"),
-          Elem("priority"),
-          _stanza_error]),
-    "message" : \
-    Elem("message",
-         [Attr("to"), Attr("from"), Attr("xmlns"), Attr("id"), Attr("xml:lang"),
-          Attr("type", ["chat", "error", "groupchat", "headline", "normal"])],
-         [],
-         [Elem("thread"),
-          Elem("subject", [Attr("xml:lang")]),
-          Elem("body", [Attr("xml:lang")]),
-          Elem("x", [Attr("xmlns")]),
-          _stanza_error]),
-    "iq" : \
-    Elem("iq",
-         [Attr("to"), Attr("from"), Attr("xmlns"), Attr("id"), Attr("xml:lang"),
-          Attr("type", ["error", "get", "result", "set"])],
-         [],
-         [Elem("query", [Attr("xmlns")]),
-          _stanza_error])
-}
+from xmppcli import syntax
 
 class DumbParser(object):
     STATE_NONE = 0
@@ -132,8 +131,7 @@ class DumbParser(object):
             print
             print "FINAL STATE"
         state = self._states[self.state]
-        for i in range(10 - len(state)):
-            state = state + " "
+        state += "".join([" " for c in range(10 - len(state))])
         if c == None:
             print " ",
         else:
@@ -155,7 +153,7 @@ class DumbParser(object):
                     self.quote = 0
                     if self.state == self.STATE_ATTR_VAL:
                         self.state = self.STATE_ATTR_NAME
-                        self.cur_elem.attrs[self.cur_attr_name] = \
+                        self.cur_elem.nsed().attrs[self.cur_attr_name] = \
                                self.cur_attr_val
                         self.cur_attr_name = ""
                         self.cur_attr_val = ""
@@ -181,7 +179,7 @@ class DumbParser(object):
                 self.cur_name = ""
                 self.state = self.STATE_NAME
                 if len(self.cdata):
-                    self.cur_elem.cdata.append(self.cdata)
+                    self.cur_elem.nsed().cdata.append(self.cdata)
                 self.cdata = ""
             elif self.state == self.STATE_CLOSING:
                 pass
@@ -202,7 +200,7 @@ class DumbParser(object):
                 self.state = self.STATE_CLOSING
             elif c == "=":
                 if self.state == self.STATE_ATTR_NAME:
-                    self.cur_elem.attrs[self.cur_attr_name] = None
+                    self.cur_elem.nsed().attrs[self.cur_attr_name] = None
                 self.cur_attr_val = ""
                 self.state = self.STATE_ATTR_VAL
             else:
@@ -225,14 +223,21 @@ class DumbParser(object):
     def complete(self, text):
         try:
             def recursor(elem, syn = None, target = None):
+                if "xmlns" in elem.parent.nsed().attrs:
+                    xmlns = elem.parent.nsed().attrs["xmlns"]
+                    if xmlns:
+                        xmlns = xmlns.lstrip("'").rstrip("'")
+                        xmlns = xmlns.lstrip('"').rstrip('"')
+                else:
+                    xmlns = None
                 if not syn:
-                    if elem.name in _stanzas.keys():
-                        syn = _stanzas[elem.name]
+                    if elem.name in syntax.stanzas.keys():
+                        syn = syntax.stanzas[elem.name]
                     else:
                         return None, None
                 else:
-                    if len(syn.children):
-                        for child in syn.children:
+                    if len(syn.nsed(xmlns).children):
+                        for child in syn.nsed(xmlns).children:
                             if elem.name == child.name:
                                 syn = child
                                 break
@@ -240,21 +245,23 @@ class DumbParser(object):
                             return None, None
                 if elem is target:
                     return elem, syn
-                elif len(elem.children):
-                    return recursor(elem.children[-1:][0], syn, target)
+                elif len(elem.nsed().children):
+                    return recursor(elem.nsed().children[-1:][0], syn, target)
                 else:
                     return elem, syn
-            if ((self.cur_elem != self.root) and len(self.root.children)):
+            if ((self.cur_elem != self.root) and
+                len(self.root.nsed().children)):
                 if self.state == self.STATE_CLOSING:
                     target = self.prev_elem
                 else:
                     target = None
                 target = self.cur_elem
-                elem, syn = recursor(self.root.children[-1:][0], None, target)
+                elem, syn = recursor(self.root.nsed().children[-1:][0], None,
+                                     target)
             else:
                 elem, syn = None, None
             if not elem or not syn:
-                ret = [stanza for stanza in _stanzas.keys()
+                ret = [stanza for stanza in syntax.stanzas.keys()
                        if stanza.startswith(text)]
                 if len(ret) == 1:
                     return [ret[0] + " "]
@@ -262,21 +269,33 @@ class DumbParser(object):
                     if self.last_non_space_c == ">":
                         readline.insert_text("<")
                     return ret
+            if "xmlns" in elem.nsed().attrs:
+                xmlns = elem.nsed().attrs["xmlns"]
+                if xmlns:
+                    xmlns = xmlns.lstrip("'").rstrip("'")
+                    xmlns = xmlns.lstrip('"').rstrip('"')
+            else:
+                xmlns = None
             if self.state == self.STATE_NAME:
-                ret = [e.name for e in syn.children
-                       if e.name.startswith(text)]
-                if len(ret) == 1:
+                names = [c.name for c in elem.nsed().children]
+                ret = [e.name for e in syn.nsed(xmlns).children
+                       if (e.name.startswith(text) and
+                           (e.multi or e.name not in names))]
+                if ((len(ret) == 1) and len(text)):
                     return [ret[0] + " "]
                 else:
-                    return ret
+                    return ret + ["/"]
             elif self.state == self.STATE_ATTR_NAME:
-                if len(syn.attrs) == 0:
-                    return [">"]
-                elif ((self.last_c == "'") or (self.last_c == '"')):
+                if ((self.last_c == "'") or (self.last_c == '"')):
                     return [text + " "]
-                ret = [attr.name for attr in syn.attrs.values()
-                       if attr.name.startswith(text)]
-                if text in ret:
+                elif len(syn.nsed(xmlns).attrs) == 0:
+                    return [">"]
+                ret = [attr.name for attr in syn.nsed(xmlns).attrs.values()
+                       if attr.name.startswith(text) and
+                           attr.name not in elem.nsed().attrs.keys()]
+                if len(ret) == 0:
+                    return [">"]
+                elif text in ret:
                     return [text + "='"]
                 elif len(ret) == 1:
                     return [ret[0] + "='"]
@@ -284,36 +303,56 @@ class DumbParser(object):
                     return ret
             elif self.state == self.STATE_ATTR_VAL:
                 if self.quote:
-                    return [text + self.quote]
-                attr = [attr for attr in syn.attrs.values()
-                        if attr.name == self.cur_attr_name]
-                if len(attr) and len(attr[0].values):
-                    return [val for val in attr[0].values
-                            if val.startswith(text)]
+                    quote = self.quote
+                else:
+                    quote = "'"
+                nqt = text.lstrip(quote)
+                vallist = None
+                if ((self.cur_attr_name == "xmlns") or
+                    self.cur_attr_name.startswith("xmlns:")):
+                    vallist = syn.nsmap.keys()
+                else:
+                    attr = [attr for attr in syn.nsed(xmlns).attrs.values()
+                            if attr.name == self.cur_attr_name]
+                    if len(attr) and len(attr[0].values):
+                        vallist = attr[0].values
+                if vallist:
+                    ret = [quote + val for val in vallist
+                           if val.startswith(nqt)]
+                    if len(ret) == 1:
+                        return [ret[0] + quote]
+                    else:
+                        return ret
+                else:
+                    return [text + quote]
             elif self.state == self.STATE_CLOSING:
                 if self.last_non_space_c2 == "<":
-                    return [syn.name + ">"]
+                    if self.last_non_space_c == "/":
+                        return ["/" + syn.name + ">"]
+                    else:
+                        return [syn.name + ">"]
                 else:
                     if self.last_non_space_c == "/":
-                        return [">"]
+                        return ["/>"]
                     if self.last_non_space_c == ">":
-                        return [i.name for i in self.cur_elem.children
+                        return [i.name for i in self.cur_elem.nsed().children
                                 if ((not text) or
                                     (text and i.name.startswith(text)))]
                     else:
-                        return [i.name for i in self.cur_elem.parent.children
+                        return [i.name for i in
+                                self.cur_elem.parent.nsed().children
                                 if ((not text) or
                                     (text and i.name.startswith(text)))]
             elif self.state == self.STATE_CDATA:
-                if not len(syn.cdata):
+                if not len(syn.nsed(xmlns).cdata):
                     return ["<"]
-                elif text in syn.cdata:
+                elif text in syn.nsed(xmlns).cdata:
                     return [text + "</" + syn.name + ">"]
                 else:
-                    return [cdata for cdata in syn.cdata
+                    return [cdata for cdata in syn.nsed(xmlns).cdata
                             if cdata.startswith(text)]
             else:
-                ret = [attr.name for attr in syn.attrs.values()
+                ret = [attr.name for attr in syn.nsed(xmlns).attrs.values()
                        if attr.name.startswith(text)]
                 if text in ret:
                     return [" " + text + "='"]

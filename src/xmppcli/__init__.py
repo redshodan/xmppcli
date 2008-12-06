@@ -27,7 +27,7 @@ def run():
     client = XMPPClient()
     ui = Interface(client, client.stream_info)
     client.setUI(ui)
-    #thread.start_new_thread(XMPPClient.run, (client,))
+    thread.start_new_thread(XMPPClient.run, (client,))
     ui.run()
 
 

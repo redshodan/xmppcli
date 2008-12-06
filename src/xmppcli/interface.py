@@ -61,12 +61,13 @@ class Interface(cmd.Cmd):
     _presence_args = ["to", "type", "priority", "show", "status"]
     _iq_args = ["to", "type", "id", "xmlns", "child"]
 
-    def __init__(self, handler, stream_info):
+    def __init__(self, handler, stream_info, debug=False):
         import atexit, sys, termios
         self.__old_termios = termios.tcgetattr(sys.__stdin__.fileno())
         atexit.register(self.cleanup)
 
         cmd.Cmd.__init__(self)
+        self.debug = debug
         self.prompt = ">> "
         self.user_rawinput = True
         self.handler = handler
@@ -75,6 +76,7 @@ class Interface(cmd.Cmd):
         readline.set_startup_hook(self.rlStartup)
         delims = readline.get_completer_delims()
         delims = delims.replace(":", "")
+        delims = delims.replace("/", "")
         delims = delims.replace("'", "")
         delims = delims.replace('"', "")
         readline.set_completer_delims(delims)
@@ -118,7 +120,7 @@ class Interface(cmd.Cmd):
     def arg_complete(self, text, line, begidx, endix):
         try:
             args = self._white_space.split(line)
-            parser = DumbParser()
+            parser = DumbParser(self.debug)
             parser.in_attr_name = 1
             parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
             parser.parse(" ".join(args[1:]))
@@ -130,7 +132,7 @@ class Interface(cmd.Cmd):
         try:
             if not line.startswith("<"):
                 return []
-            parser = DumbParser()
+            parser = DumbParser(self.debug)
             parser.parse(line)
             return parser.complete(text)
         except Exception, e:
