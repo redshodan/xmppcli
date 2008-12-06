@@ -273,7 +273,7 @@ class DumbParser(object):
                 if len(syn.attrs) == 0:
                     return [">"]
                 elif ((self.last_c == "'") or (self.last_c == '"')):
-                    return [" "]
+                    return [text + " "]
                 ret = [attr.name for attr in syn.attrs.values()
                        if attr.name.startswith(text)]
                 if text in ret:
@@ -283,6 +283,8 @@ class DumbParser(object):
                 else:
                     return ret
             elif self.state == self.STATE_ATTR_VAL:
+                if self.quote:
+                    return [text + self.quote]
                 attr = [attr for attr in syn.attrs.values()
                         if attr.name == self.cur_attr_name]
                 if len(attr) and len(attr[0].values):

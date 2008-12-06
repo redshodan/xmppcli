@@ -73,6 +73,11 @@ class Interface(cmd.Cmd):
         self.stream_info = stream_info
         self.rl_prompt = False
         readline.set_startup_hook(self.rlStartup)
+        delims = readline.get_completer_delims()
+        delims = delims.replace(":", "")
+        delims = delims.replace("'", "")
+        delims = delims.replace('"', "")
+        readline.set_completer_delims(delims)
 
     def cleanup(self):
         import termios, sys
