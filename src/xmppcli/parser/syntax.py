@@ -70,9 +70,7 @@ stanzas = \
                 Attr("type", ["error", "get", "result", "set"])],
                [],
                [Elem("query",
-                     [NSed(None, [Attr("xmlns")]),
-                      iq_privacy]),
+                     [NSed(None, [Attr("xmlns")]),  ]),
+#                      iq_privacy]),
                 stanza_error])])
 }
-
-

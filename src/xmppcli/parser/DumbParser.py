@@ -15,82 +15,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import re, readline
+from . import Attr, Elem, NSed
+from . import syntax
 from xmppcli import logEx
 
-
-__all__ = ["Attr", "Elem", "DumbParser"]
-
-
-class Attr(object):
-    def __init__(self, name, values = None):
-        self.name = name
-        if values:
-            self.values = values
-        else:
-            self.values = []
-
-class NSed(object):
-    def __init__(self, ns = None, attrs = None, cdata = None, children = None):
-        if ns is None:
-            self.nsname = "xmlns"
-            self.ns = ns
-        elif ns is tuple:
-            self.nsname = ns[0]
-            self.ns = ns[1]
-        else:
-            self.nsname = "xmlns"
-            self.ns = ns
-        self.attrs = {}
-        if attrs:
-            for attr in attrs:
-                self.attrs[attr.name] = attr
-        if self.ns:
-            self.attrs[self.nsname] = Attr(self.nsname, [ns])
-        if cdata:
-            self.cdata = cdata
-        else:
-            self.cdata = []
-        if children:
-            self.children = children
-        else:
-            self.children = []
-
-class Elem(object):
-    def __init__(self, name, nsmap = None, parent = None, multi=False):
-        self.name = name
-        self.default_nsed = NSed()
-        self.nsmap = {}
-        if nsmap:
-            for nsed in nsmap:
-                if nsed.ns:
-                    self.nsmap[nsed.ns] = nsed
-                else:
-                    self.default_nsed = nsed
-        self.parent = parent
-        if self.parent:
-            self.parent.nsed().children.append(self)
-        self.multi = multi
-
-    def nsed(self, ns = None):
-        try:
-            if ns:
-                return self.nsmap[ns]
-        except KeyError:
-            pass
-        return self.default_nsed
-
-    def doPrint(self, indent = "", recurse = True):
-        print indent, self, self.name, ":", self.nsed().attrs, ":",
-        print self.nsed().children, ":",
-        if self.parent:
-            print self.parent.name, self.parent
-        else:
-            print
-        if recurse:
-            for child in self.nsed().children:
-                child.doPrint(indent + "  ", False)
-
-from xmppcli import syntax
 
 class DumbParser(object):
     STATE_NONE = 0
@@ -154,7 +82,7 @@ class DumbParser(object):
                     if self.state == self.STATE_ATTR_VAL:
                         self.state = self.STATE_ATTR_NAME
                         self.cur_elem.nsed().attrs[self.cur_attr_name] = \
-                               self.cur_attr_val
+                               Attr(self.cur_attr_name, [self.cur_attr_val])
                         self.cur_attr_name = ""
                         self.cur_attr_val = ""
                 elif self.quote:
@@ -224,9 +152,9 @@ class DumbParser(object):
         try:
             def recursor(elem, syn = None, target = None):
                 if "xmlns" in elem.parent.nsed().attrs:
-                    xmlns = elem.parent.nsed().attrs["xmlns"]
-                    if xmlns:
-                        xmlns = xmlns.lstrip("'").rstrip("'")
+                    attr = elem.parent.nsed().attrs["xmlns"]
+                    if attr:
+                        xmlns = attr.value().lstrip("'").rstrip("'")
                         xmlns = xmlns.lstrip('"').rstrip('"')
                 else:
                     xmlns = None
@@ -270,9 +198,9 @@ class DumbParser(object):
                         readline.insert_text("<")
                     return ret
             if "xmlns" in elem.nsed().attrs:
-                xmlns = elem.nsed().attrs["xmlns"]
-                if xmlns:
-                    xmlns = xmlns.lstrip("'").rstrip("'")
+                attr = elem.nsed().attrs["xmlns"]
+                if attr:
+                    xmlns = attr.value().lstrip("'").rstrip("'")
                     xmlns = xmlns.lstrip('"').rstrip('"')
             else:
                 xmlns = None
