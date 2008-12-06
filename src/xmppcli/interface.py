@@ -140,11 +140,10 @@ class Interface(cmd.Cmd):
         return []
 
     def default(self, line):
+        if line == "EOF":
+            print
+            return True
         self.handler.handleUIXML(line)
-
-    def do_EOF(self, arg):
-        print
-        return True
 
     def emptyline(self):
         pass
@@ -176,6 +175,9 @@ class Interface(cmd.Cmd):
     ### Command functions
     ###
 
+    def help_help(self):
+        self.do_help()
+
     def help_presence(self):
         print "Usage: presence [to] [type] [priority] [show] [status]"
 
@@ -187,4 +189,3 @@ class Interface(cmd.Cmd):
 
     def complete_presence(self, text, line, begidx, endix):
         return self.arg_complete(text, line, begidx, endix)
-
