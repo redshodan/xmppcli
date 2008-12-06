@@ -28,11 +28,11 @@ def parseXSDList(home):
     globs = {}
     execfile(os.path.join(home, "xsd", "list.py"), globs)
     for mapping in globs["mappings"]:
+        filename = os.path.join(home, "xsd", mapping[3])
         rootname = mapping[0]
         nodename = mapping[1]
         patchin = False
         ns = mapping[2]
-        filename = os.path.join(home, "xsd", ns + ".xsd")
         parser = parse(filename)
         if rootname:
             path = rootname.split("/")
@@ -95,6 +95,8 @@ def generateSyntax(parser, name, ns, sparent):
         elif not sparent:
             stanzas[schild.name] = schild
         return schild
+    else:
+        raise Exception("Could not find elem in xsd:", name, ns)
 
 def _recursor(schema, xelem, sparent, ns):
     if xelem.name == "xs:attribute":

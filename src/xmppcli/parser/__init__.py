@@ -108,9 +108,9 @@ class Elem(object):
         return None
 
     def doPrint(self, indent = "", ns = ALL, recurse = True):
-        print indent, self, self.name, ":", vtypes[self.nsed(ns).vtype], ":",
+        print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype], ":",
         if self.parent:
-            print self.parent.name, self.parent
+            print self.parent.name
         else:
             print
         if len(self.nsmap):
