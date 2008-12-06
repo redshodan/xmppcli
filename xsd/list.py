@@ -10,5 +10,6 @@ mappings = \
     [None, "presence", "jabber:client"],
     [None, "message", "jabber:client"],
     [None, "iq", "jabber:client"],
-    ["iq", "query", "jabber:iq:privacy"]
+    ["iq", "query", "jabber:iq:privacy"],
+    ["iq", "query", "jabber:iq:roster"],
 ]
