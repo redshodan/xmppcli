@@ -18,7 +18,10 @@ import sys
 
 sys.path.append("./src")
 
+import xmppcli
 from xmppcli import Interface
+
+xmppcli.init(".")
 
 class Handler:
     def handleUIPresence(self, argmap):

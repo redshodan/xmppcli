@@ -23,11 +23,5 @@ import xmppcli
 
 XSDParser.parseXSDList(".")
 
-#state = XSDParser.parse("test-xsdparser.xsd")
-#syn = xmppcli.Elem("iq")
-#XSDParser.generateSyntax(state, "query", "jabber:iq:privacy", syn)
-#syn.doPrint()
-
-xmppcli.parser.syntax.stanzas["iq"].doPrint(ns = "jabber:iq:privacy")
-print
-xmppcli.parser.syntax.stanzas["iq"].doPrint()
+for stanza in xmppcli.parser.stanzas.values():
+    stanza.doPrint()

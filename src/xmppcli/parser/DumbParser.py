@@ -16,7 +16,7 @@
 
 import re, readline
 from . import Attr, Elem, NSed
-from . import syntax
+from . import stanzas
 from xmppcli import logEx
 
 
@@ -159,8 +159,8 @@ class DumbParser(object):
                 else:
                     xmlns = None
                 if not syn:
-                    if elem.name in syntax.stanzas.keys():
-                        syn = syntax.stanzas[elem.name]
+                    if elem.name in stanzas.keys():
+                        syn = stanzas[elem.name]
                     else:
                         return None, None
                 else:
@@ -189,7 +189,7 @@ class DumbParser(object):
             else:
                 elem, syn = None, None
             if not elem or not syn:
-                ret = [stanza for stanza in syntax.stanzas.keys()
+                ret = [stanza for stanza in stanzas.keys()
                        if stanza.startswith(text)]
                 if len(ret) == 1:
                     return [ret[0] + " "]

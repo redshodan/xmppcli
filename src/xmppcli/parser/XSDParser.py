@@ -17,25 +17,31 @@
 
 import os
 from xmppcli.parser import *
-from . import syntax
+from . import stanzas
 from .DumbParser import DumbParser
+
+
+base_syntax = {}
 
 
 def parseXSDList(home):
     globs = {}
     execfile(os.path.join(home, "xsd", "list.py"), globs)
     for mapping in globs["mappings"]:
-        filename = os.path.join(home, "xsd", mapping[3])
         rootname = mapping[0]
         nodename = mapping[1]
         patchin = False
         ns = mapping[2]
+        filename = os.path.join(home, "xsd", ns + ".xsd")
         parser = parse(filename)
-        path = rootname.split("/")
-        root = syntax.stanzas[path[0]]
-        path = path[1:]
-        for part in path:
-            root = root.find(part)
+        if rootname:
+            path = rootname.split("/")
+            root = stanzas[path[0]]
+            path = path[1:]
+            for part in path:
+                root = root.find(part)
+        else:
+            root = None
         generateSyntax(parser, nodename, ns, root)
 
 def parse(filename):
@@ -65,59 +71,74 @@ def generateSyntax(parser, name, ns, sparent):
         elems = {}
         for child in elem.children:
             elems[child.name] = child
-            if ((child.name == "xs:element") and
+            if (((child.name == "xs:element") or
+                 (child.name == "xs:attribute")) and
                 (child.attrs["name"].value() == name)):
                 root = child
         if not root:
             raise Exception("Invalid XSD spec. Missing root element " + name)
 
-        for schild in sparent.children:
-            if schild.name == name:
-                nsed = NSed(ns, [Attr("xmlns", [ns])], vtype=_parseType(root))
-                schild.nsmap[ns] = nsed
-                for child in root.nsed(ns).children:
-                    _recursor(schema, root, schild)
-                return
-        else:
-            schild = _recursor(schema, root, sparent)
-            schild.attrs["xmlns"] = Attr("xmlns", [ns])
-            return
-
-def _recursor(schema, xelem, sparent):
-    if xelem.name == "xs:attribute":
-        _parseAttribute(schema, xelem, sparent)
-    elif "ref" in xelem.attrs:
-        name = xelem.attrs["ref"].value()
-        for xchild in schema.children:
-            if (("name" in xchild.attrs) and
-                (xchild.attrs["name"].value() == name)):
-                _recursor(schema, xchild, sparent)
-                return
-    elif ((xelem.name != "xs:element") or ("name" not in xelem.attrs)):
-        for xchild in xelem.children:
-            _recursor(schema, xchild, sparent)
-    else:
-        schild = Elem(xelem.attrs["name"].value(), parent = sparent)
-        schild.nsed().vtype = _parseType(xelem)
-        for xchild in xelem.children:
-            _recursor(schema, xchild, schild)
+        if sparent:
+            for schild in sparent.children:
+                if schild.name == name:
+                    nsed = NSed(ns, [Attr("xmlns", [ns])],
+                                vtype=_parseType(root))
+                    schild.nsmap[ns] = nsed
+                    for child in root.nsed(ns).children:
+                        _recursor(schema, child , schild, ns)
+                    return None
+        schild = _recursor(schema, root, sparent, ns)
+        if isinstance(schild, Elem):
+            schild.nsed(ns).attrs["xmlns"] = Attr("xmlns", [ns])
+        if ns == "xmppcli:base":
+            base_syntax[schild.name] = schild
+        elif not sparent:
+            stanzas[schild.name] = schild
         return schild
 
-def _parseAttribute(schema, xelem, selem):
-    if len(xelem.children):
-        xchild = xelem.find("xs:simpleType")
-        if xchild:
-            xchild = xchild.find("xs:restriction")
+def _recursor(schema, xelem, sparent, ns):
+    if xelem.name == "xs:attribute":
+        return _parseAttribute(schema, xelem, sparent)
+    elif "ref" in xelem.attrs:
+        name = xelem.attrs["ref"].value()
+        ref = _findRef(schema, name)
+        if ref:
+            return _recursor(schema, ref, sparent, ns)
+    elif ((xelem.name != "xs:element") or ("name" not in xelem.attrs)):
+        for xchild in xelem.children:
+            _recursor(schema, xchild, sparent, ns)
     else:
-        xchild = xelem
+        schild = Elem(xelem.attrs["name"].value(), parent=sparent, ns=ns)
+        schild.nsed(ns).vtype = _parseType(xelem)
+        schild.nsed(ns).cdata = _parseRestriction(schema, xelem)
+        for xchild in xelem.children:
+            _recursor(schema, xchild, schild, ns)
+        return schild
+
+def _parseRestriction(schema, xelem):
+    restriction = xelem.find("xs:restriction", True, ["xs:element",
+                                                      "xs:attribute"])
+    values = []
+    if restriction:
+        for xchild in restriction.children:
+            values.append(xchild.attrs["value"].value())
+    return values
+
+def _parseAttribute(schema, xelem, selem):
     if (("use" in xelem.attrs) and (xelem.attrs["use"].value() == "required")):
         required = True
     else:
         required = False
-    sattr = Attr(xelem.attrs["name"].value(), None, required, _parseType(xelem))
-    for xchild in xchild.children:
-        sattr.values.append(xchild.attrs["value"].value())
-    selem.attrs[sattr.name] = sattr
+    if "ref" in xelem.attrs:
+        ref = _findRef(schema, xelem.attrs["ref"].values[0])
+        sattr = Attr(ref.name, ref.values, required, ref.vtype)
+    else:
+        sattr = Attr(xelem.attrs["name"].value(),
+                     _parseRestriction(schema, xelem), required,
+                     _parseType(xelem))
+    if selem:
+        selem.attrs[sattr.name] = sattr
+    return sattr
 
 def _parseType(xelem):
     if "type" in xelem.attrs:
@@ -134,3 +155,12 @@ def _parseType(xelem):
         return VTYPE_BOOL
     else:
         return VTYPE_NONE
+
+def _findRef(schema, name):
+    if name in base_syntax:
+        return base_syntax[name]
+    for xchild in schema.children:
+        if (("name" in xchild.attrs) and
+            (xchild.attrs["name"].value() == name)):
+            return xchild
+    return None

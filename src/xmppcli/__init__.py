@@ -22,6 +22,10 @@ def logEx(e):
     print e
 
 
+def init(home):
+    parser.init(home)
+
+
 def run():
     import thread
     client = XMPPClient()
