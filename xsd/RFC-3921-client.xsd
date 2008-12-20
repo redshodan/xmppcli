@@ -186,6 +186,7 @@
     </xs:complexType>
   </xs:element>
 
+  <!-- Artificial hookin for xmppcli syntax --->
   <xs:element name='query'>
     <xs:complexType>
       <xs:sequence>

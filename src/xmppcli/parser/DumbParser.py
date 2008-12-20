@@ -21,12 +21,13 @@ from xmppcli import logEx
 
 
 class DumbParser(object):
-    STATE_NONE = 0
-    STATE_NAME = 1
-    STATE_ATTR_NAME = 2
-    STATE_ATTR_VAL = 3
-    STATE_CLOSING = 5
-    STATE_CDATA = 6
+    (STATE_NONE,
+     STATE_NAME,
+     STATE_ATTR_NAME,
+     STATE_ATTR_VAL,
+     STATE_CLOSING,
+     STATE_CDATA,
+     STATE_COMMENT) = range(7)
 
     _states = \
     {
@@ -102,7 +103,10 @@ class DumbParser(object):
                 if self.state == self.STATE_CLOSING:
                     self.prev_elem = self.cur_elem
                     self.cur_elem = self.cur_elem.parent
-                self.state = self.STATE_CDATA
+                if self.state == self.STATE_COMMENT:
+                    self.state = self.STATE_NONE
+                else:
+                    self.state = self.STATE_CDATA
             elif c == "<":
                 self.cur_name = ""
                 self.state = self.STATE_NAME
@@ -131,6 +135,8 @@ class DumbParser(object):
                     self.cur_elem.nsed().attrs[self.cur_attr_name] = None
                 self.cur_attr_val = ""
                 self.state = self.STATE_ATTR_VAL
+            elif ((c == "!") and self.last_c == "<"):
+                self.state = self.STATE_COMMENT
             else:
                 if self.state == self.STATE_NAME:
                     self.cur_name += c
