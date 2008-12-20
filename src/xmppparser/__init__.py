@@ -26,16 +26,6 @@ def init(home):
     parser.init(home)
 
 
-def run():
-    import thread
-    client = XMPPClient()
-    ui = Interface(client, client.stream_info)
-    client.setUI(ui)
-    thread.start_new_thread(XMPPClient.run, (client,))
-    ui.run()
-
-
 from .parser import Attr, Elem, DumbParser
 from .interface import Interface
-#from .client import XMPPClient
 from . import parser, interface

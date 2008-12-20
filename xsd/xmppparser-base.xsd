@@ -2,8 +2,8 @@
 
 <xs:schema
     xmlns:xs='http://www.w3.org/2001/XMLSchema'
-    targetNamespace='xmppcli:base'
-    xmlns='xmppcli:base'
+    targetNamespace='xmppparser:base'
+    xmlns='xmppparser:base'
     elementFormDefault='qualified'>
 
   <xs:attribute name='xml:lang' type='xs:string'/>

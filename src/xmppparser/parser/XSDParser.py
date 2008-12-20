@@ -16,13 +16,13 @@
 
 
 import os
-from xmppcli.parser import *
+from xmppparser.parser import *
 from . import stanzas
 from .DumbParser import DumbParser
 
 
 base_syntax = {}
-required_ns = ["xmppcli:base", "jabber:client"]
+required_ns = ["xmppparser:base", "jabber:client"]
 
 def parseXSDList(home, xsdlist = None):
     if xsdlist:
@@ -90,7 +90,7 @@ def generateSyntax(parser, name, ns, sparent):
                         _recursor(schema, child , schild, ns)
                     return None
         schild = _recursor(schema, root, sparent, ns)
-        if ns == "xmppcli:base":
+        if ns == "xmppparser:base":
             base_syntax[schild.name] = schild
         elif not sparent:
             stanzas[schild.name] = schild

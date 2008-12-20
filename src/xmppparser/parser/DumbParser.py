@@ -17,7 +17,7 @@
 import re, readline
 from . import Attr, Elem, NSed
 from . import stanzas
-from xmppcli import logEx
+from xmppparser import logEx
 
 
 class DumbParser(object):

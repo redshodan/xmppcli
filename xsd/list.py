@@ -24,7 +24,7 @@
 mappings = \
 [
     ### Basic xsd types
-    [None, "xml:lang", "xmppcli:base", "xmppcli-base.xsd"],
+    [None, "xml:lang", "xmppparser:base", "xmppparser-base.xsd"],
 
     ### RFC 3921
     # Core stanzas

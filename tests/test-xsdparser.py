@@ -18,10 +18,10 @@ import sys
 
 sys.path.append("./src")
 
-from xmppcli.parser import XSDParser
-import xmppcli
+from xmppparser.parser import XSDParser
+import xmppparser
 
 XSDParser.parseXSDList(".", sys.argv[1:])
 
-for stanza in xmppcli.parser.stanzas.values():
+for stanza in xmppparser.parser.stanzas.values():
     stanza.doPrint()

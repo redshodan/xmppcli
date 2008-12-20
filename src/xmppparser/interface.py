@@ -15,8 +15,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import cmd, re, readline
-from xmppcli.parser import *
-from xmppcli import logEx
+from xmppparser.parser import *
+from xmppparser import logEx
 
 
 __all__ = ["Interface", "StanzaHandler"]
