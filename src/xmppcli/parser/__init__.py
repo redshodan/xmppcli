@@ -104,7 +104,7 @@ class Elem(object):
         def recursor():
             for child in self.children:
                 if child.name not in filter:
-                    return child.find(name, recurse)
+                    return child.find(name, recurse, filter)
         for child in self.children:
             if child.name == name:
                 return child

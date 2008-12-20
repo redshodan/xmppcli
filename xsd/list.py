@@ -23,6 +23,8 @@ mappings = \
     ["iq", "query", "jabber:iq:rpc", "XEP-0009.xsd"],
     ### XEP-0012
     ["iq", "query", "jabber:iq:last", "XEP-0012.xsd"],
+    ### XEP-0013
+    ["iq", "offline", "http://jabber.org/protocol/offline", "XEP-0013.xsd"],
 
     ### XEP-0050
     ["iq", "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
