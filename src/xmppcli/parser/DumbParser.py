@@ -217,6 +217,8 @@ class DumbParser(object):
                            (e.multi or e.name not in names))]
                 if ((len(ret) == 1) and len(text)):
                     return [ret[0] + " "]
+                elif len(text):
+                    return ret
                 else:
                     return ret + ["/"]
             elif self.state == self.STATE_ATTR_NAME:
