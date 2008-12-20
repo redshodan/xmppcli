@@ -19,6 +19,8 @@ mappings = \
     ["iq", "query", "jabber:iq:privacy", "RFC-3921-iq-privacy.xsd"],
     ["iq", "query", "jabber:iq:roster", "RFC-3921-iq-roster.xsd"],
 
+    ### XEP-0009
+    ["iq", "query", "jabber:iq:rpc", "XEP-0009.xsd"],
     ### XEP-0012
     ["iq", "query", "jabber:iq:last", "XEP-0012.xsd"],
 

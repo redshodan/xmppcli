@@ -22,17 +22,20 @@ from .DumbParser import DumbParser
 
 
 base_syntax = {}
+required_ns = ["xmppcli:base", "jabber:client"]
 
-
-def parseXSDList(home):
+def parseXSDList(home, xsdlist = None):
+    if xsdlist:
+        xsdlist.extend(required_ns)
     globs = {}
     execfile(os.path.join(home, "xsd", "list.py"), globs)
     for mapping in globs["mappings"]:
-        filename = os.path.join(home, "xsd", mapping[3])
         rootname = mapping[0]
         nodename = mapping[1]
-        patchin = False
         ns = mapping[2]
+        if xsdlist and mapping[2] not in xsdlist:
+            continue
+        filename = os.path.join(home, "xsd", mapping[3])
         parser = parse(filename)
         if rootname:
             path = rootname.split("/")
@@ -123,7 +126,10 @@ def _parseRestriction(schema, xelem):
     values = []
     if restriction:
         for xchild in restriction.children:
-            values.append(xchild.attrs["value"].value())
+            if xchild.name == "xs:enumeration":
+                values.append(xchild.attrs["value"].value())
+            elif xchild.name == "xs:pattern":
+                values.append(ValuePattern(xchild.attrs["value"]))
     return values
 
 def _parseAttribute(schema, xelem, selem, ns):

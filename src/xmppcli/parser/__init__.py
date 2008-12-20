@@ -15,8 +15,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-__all__ = ["Attr", "Elem", "NSed", "DumbParser", "XSDParser", "stanzas",
-           "VTYPE_NONE", "VTYPE_STR", "VTYPE_INT", "VTYPE_UINT", "VTYPE_BOOL"]
+__all__ = ["ValuePattern", "Attr", "Elem", "NSed", "DumbParser", "XSDParser",
+           "stanzas", "VTYPE_NONE", "VTYPE_STR", "VTYPE_INT", "VTYPE_UINT",
+           "VTYPE_BOOL"]
 
 
 (VTYPE_NONE, VTYPE_STR, VTYPE_INT, VTYPE_UINT, VTYPE_BOOL) = range(5)
@@ -31,6 +32,10 @@ vtypes = \
 
 # Stanza syntax tree
 stanzas = {}
+
+class ValuePattern(object):
+    def __init__(self, pattern):
+        self.pattern = pattern
 
 class Attr(object):
     def __init__(self, name, values = None, required = False,

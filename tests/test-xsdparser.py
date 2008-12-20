@@ -21,7 +21,7 @@ sys.path.append("./src")
 from xmppcli.parser import XSDParser
 import xmppcli
 
-XSDParser.parseXSDList(".")
+XSDParser.parseXSDList(".", sys.argv[1:])
 
 for stanza in xmppcli.parser.stanzas.values():
     stanza.doPrint()

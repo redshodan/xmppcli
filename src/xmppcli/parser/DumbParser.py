@@ -246,7 +246,7 @@ class DumbParser(object):
                         vallist = attr[0].values
                 if vallist:
                     ret = [quote + val for val in vallist
-                           if val.startswith(nqt)]
+                           if isinstance(val, str) and val.startswith(nqt)]
                     if len(ret) == 1:
                         return [ret[0] + quote]
                     else:
@@ -277,8 +277,13 @@ class DumbParser(object):
                 elif text in syn.nsed(xmlns).cdata:
                     return [text + "</" + syn.name + ">"]
                 else:
-                    return [cdata for cdata in syn.nsed(xmlns).cdata
-                            if cdata.startswith(text)]
+                    ret = [cdata for cdata in syn.nsed(xmlns).cdata
+                           if isinstance(cdata, str) and
+                           cdata.startswith(text)]
+                    if len(ret):
+                        return ret
+                    else:
+                        return ["<"]
             else:
                 ret = [attr.name for attr in syn.nsed(xmlns).attrs.values()
                        if attr.name.startswith(text)]
