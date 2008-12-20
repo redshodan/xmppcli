@@ -61,8 +61,7 @@ class Attr(object):
 class Elem(object):
     ALL = object()
 
-    def __init__(self, name, nsmap = None, parent = None, multi = False,
-                 ns = None):
+    def __init__(self, name, nsmap = None, parent = None, ns = None):
         self.name = name
         self.default_nsed = NSed()
         self.nsmap = {}
@@ -75,7 +74,15 @@ class Elem(object):
         self.parent = parent
         if self.parent:
             self.parent.nsed(ns).children.append(self)
-        self.multi = multi
+            for nsed in self.nsmap.values():
+                nsed.extendNS(self.parent.nsed(nsed.ns))
+            if self.parent.ns:
+                self.default_nsed.extendNS(self.parent.ns)
+        self.multi = False
+
+    @property
+    def ns(self):
+        return self.nsed().ns
 
     @property
     def attrs(self):
@@ -94,6 +101,8 @@ class Elem(object):
         return self.nsed().vtype
 
     def nsed(self, ns = None):
+        if not ns:
+            ns = "jabber:client"
         try:
             return self.nsmap[ns]
         except KeyError:
@@ -115,7 +124,7 @@ class Elem(object):
     def doPrint(self, indent = "", ns = ALL, recurse = True):
         print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype], ":",
         if self.parent:
-            print self.parent.name
+            print "parent=" + self.parent.name
         else:
             print
         if len(self.nsmap):
@@ -132,21 +141,14 @@ class Elem(object):
 class NSed(object):
     def __init__(self, ns = None, attrs = None, cdata = None, children = None,
                  vtype = VTYPE_NONE):
-        if ns is None:
-            self.nsname = "xmlns"
-            self.ns = ns
-        elif ns is tuple:
-            self.nsname = ns[0]
-            self.ns = ns[1]
-        else:
-            self.nsname = "xmlns"
-            self.ns = ns
+        self.ns = ns
+        self.nses = {}
         self.attrs = {}
         if attrs:
             for attr in attrs:
                 self.attrs[attr.name] = attr
         if self.ns:
-            self.attrs[self.nsname] = Attr(self.nsname, [ns])
+            self.attrs["xmlns"] = Attr("xmlns", [ns])
         if cdata:
             self.cdata = cdata
         else:
@@ -157,13 +159,20 @@ class NSed(object):
             self.children = []
         self.vtype = vtype
 
+    def extendNS(self, parent_nsed):
+        for key, val in parent_nsed.nses.iteritems():
+            if self.val != self.ns:
+                self.nses[key] = val
+
     def doPrint(self, indent="", ns = Elem.ALL, recurse = True, header=True):
         if header:
             print indent, "NS:",
             if self.ns:
-                print self.nsname, "=", self.ns
+                print self.ns
             else:
                 print "default"
+        if len(self.nses):
+            print indent, "nses:", self.nses
         if len(self.cdata):
             print indent, "    cdata:", self.cdata
         for attr in self.attrs.values():

@@ -26,6 +26,10 @@ mappings = \
     ### XEP-0013
     ["iq", "offline", "http://jabber.org/protocol/offline", "XEP-0013.xsd"],
 
+    ### XEP-0016 -- handled by RFC3921-iq-privacy
+
+
+
     ### XEP-0050
     ["iq", "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
     ### XEP-0004, depends upon XEP-0050

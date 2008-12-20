@@ -84,15 +84,12 @@ def generateSyntax(parser, name, ns, sparent):
         if sparent:
             for schild in sparent.children:
                 if schild.name == name:
-                    nsed = NSed(ns, [Attr("xmlns", [ns])],
-                                vtype=_parseType(root))
+                    nsed = NSed(ns, vtype=_parseType(root))
                     schild.nsmap[ns] = nsed
                     for child in root.nsed(ns).children:
                         _recursor(schema, child , schild, ns)
                     return None
         schild = _recursor(schema, root, sparent, ns)
-        if isinstance(schild, Elem):
-            schild.nsed(ns).attrs["xmlns"] = Attr("xmlns", [ns])
         if ns == "xmppcli:base":
             base_syntax[schild.name] = schild
         elif not sparent:
@@ -113,11 +110,16 @@ def _recursor(schema, xelem, sparent, ns):
         for xchild in xelem.children:
             _recursor(schema, xchild, sparent, ns)
     else:
-        schild = Elem(xelem.attrs["name"].value(), parent=sparent, ns=ns)
-        schild.nsed(ns).vtype = _parseType(xelem)
-        schild.nsed(ns).cdata = _parseRestriction(schema, xelem)
+        if "xmlns" in xelem.attrs:
+            nsed_ns = xelem.attrs["xmlns"]
+        else:
+            nsed_ns = None
+        nsed = NSed(nsed_ns, cdata=_parseRestriction(schema, xelem),
+                    vtype=_parseType(xelem))
+        schild = Elem(xelem.attrs["name"].value(), [nsed], sparent, ns)
         for xchild in xelem.children:
-            _recursor(schema, xchild, schild, ns)
+            # Dont pass on the schema NS after the first element
+            _recursor(schema, xchild, schild, None)
         return schild
 
 def _parseRestriction(schema, xelem):
