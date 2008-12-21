@@ -57,6 +57,11 @@ mappings = \
     ### XEP-0027
     ["message", "x", "jabber:x:encrypted", "XEP-0027-encrypted.xsd"],
     ["message", "x", "jabber:x:signed", "XEP-0027-signed.xsd"],
+    ### XEP-0030
+    ["iq", "query", "http://jabber.org/protocol/disco#info",
+     "XEP-0030-disco-info.xsd"],
+    ["iq", "query", "http://jabber.org/protocol/disco#items",
+     "XEP-0030-disco-items.xsd"],
     ### XEP-0050
     ["iq", "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
 ]
