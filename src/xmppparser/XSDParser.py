@@ -70,6 +70,8 @@ def generateSyntax(parser, name, ns, sparent):
         if elemns != ns:
             continue
 
+        if ns == "jabber:client":
+            ns = None
         root = None
         elems = {}
         for child in elem.children:
@@ -110,7 +112,9 @@ def _recursor(schema, xelem, sparent, ns):
         for xchild in xelem.children:
             _recursor(schema, xchild, sparent, ns)
     else:
-        if "xmlns" in xelem.attrs:
+        if ns:
+            nsed_ns = ns
+        elif "xmlns" in xelem.attrs:
             nsed_ns = xelem.attrs["xmlns"]
         else:
             nsed_ns = None

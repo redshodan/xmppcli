@@ -22,11 +22,6 @@ def logEx(e):
     print e
 
 
-__all__ = ["ValuePattern", "Attr", "Elem", "NSed", "DumbParser", "XSDParser",
-           "stanzas", "VTYPE_NONE", "VTYPE_STR", "VTYPE_INT", "VTYPE_UINT",
-           "VTYPE_BOOL"]
-
-
 (VTYPE_NONE, VTYPE_STR, VTYPE_INT, VTYPE_UINT, VTYPE_BOOL) = range(5)
 vtypes = \
 {
@@ -70,21 +65,25 @@ class Elem(object):
 
     def __init__(self, name, nsmap = None, parent = None, ns = None):
         self.name = name
-        self.default_nsed = NSed()
+        self.default_nsed = None
         self.nsmap = {}
         if nsmap:
             for nsed in nsmap:
                 if nsed.ns:
                     self.nsmap[nsed.ns] = nsed
+                    if not self.default_nsed:
+                        self.default_nsed = nsed
                 else:
                     self.default_nsed = nsed
+        if not self.default_nsed:
+            self.default_nsed = NSed()
         self.parent = parent
         if self.parent:
             self.parent.nsed(ns).children.append(self)
             for nsed in self.nsmap.values():
                 nsed.extendNS(self.parent.nsed(nsed.ns))
             if self.parent.ns:
-                self.default_nsed.extendNS(self.parent.ns)
+                self.default_nsed.extendNS(self.parent.default_nsed)
         self.multi = False
 
     @property
@@ -108,8 +107,6 @@ class Elem(object):
         return self.nsed().vtype
 
     def nsed(self, ns = None):
-        if not ns:
-            ns = "jabber:client"
         try:
             return self.nsmap[ns]
         except KeyError:
@@ -128,6 +125,12 @@ class Elem(object):
             return recursor()
         return None
 
+    def isEmpty(self):
+        if len(self.nsmap) or not self.default_nsed.isEmpty():
+            return False
+        else:
+            return True
+
     def doPrint(self, indent = "", ns = ALL, recurse = True):
         print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype], ":",
         if self.parent:
@@ -139,7 +142,8 @@ class Elem(object):
         else:
             header = False
         if ns == self.ALL:
-            self.default_nsed.doPrint(indent, ns, recurse, header)
+            if self.default_nsed not in self.nsmap.values():
+                self.default_nsed.doPrint(indent, ns, recurse, header)
             for nsed in self.nsmap.values():
                 nsed.doPrint(indent, ns, recurse)
         else:
@@ -168,8 +172,14 @@ class NSed(object):
 
     def extendNS(self, parent_nsed):
         for key, val in parent_nsed.nses.iteritems():
-            if self.val != self.ns:
+            if val != self.ns:
                 self.nses[key] = val
+
+    def isEmpty(self):
+        if (len(self.attrs) or len(self.cdata) or len(self.children)):
+            return False
+        else:
+            return True
 
     def doPrint(self, indent="", ns = Elem.ALL, recurse = True, header=True):
         if header:

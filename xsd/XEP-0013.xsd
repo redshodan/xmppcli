@@ -13,11 +13,15 @@
     </xs:documentation>
   </xs:annotation>
 
+  <!-- Fixed up XSD to account for newish fetch and purge elements -->
+
   <xs:element name='offline'>
     <xs:complexType>
-      <xs:sequence>
-        <xs:element ref='item' minOccurs='1' maxOccurs='unbounded'/>
-      </xs:sequence>
+      <xs:choice>
+        <xs:element ref='item' minOccurs='0' maxOccurs='unbounded'/>
+        <xs:element name='fetch' minOccurs='0' type='empty'/>
+        <xs:element name='purge' minOccurs='0' type='empty'/>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 
@@ -35,5 +39,11 @@
       <xs:attribute name='node' type='xs:string' use='required'/>
     </xs:complexType>
   </xs:element>
+
+  <xs:simpleType name='empty'>
+    <xs:restriction base='xs:string'>
+      <xs:enumeration value=''/>
+    </xs:restriction>
+  </xs:simpleType>
 
 </xs:schema>

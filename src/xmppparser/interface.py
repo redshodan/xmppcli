@@ -78,6 +78,7 @@ class Interface(cmd.Cmd):
         delims = delims.replace("/", "")
         delims = delims.replace("'", "")
         delims = delims.replace('"', "")
+        delims = delims.replace('-', "")
         readline.set_completer_delims(delims)
 
     def cleanup(self):

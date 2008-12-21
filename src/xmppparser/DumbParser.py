@@ -212,12 +212,16 @@ class DumbParser(object):
                 xmlns = None
             if self.state == self.STATE_NAME:
                 names = [c.name for c in elem.nsed().children]
-                ret = [e.name for e in syn.nsed(xmlns).children
+                ret = [e for e in syn.nsed(xmlns).children
                        if (e.name.startswith(text) and
                            (e.multi or e.name not in names))]
-                if ((len(ret) == 1) and len(text)):
-                    return [ret[0] + " "]
-                elif len(text):
+                if (len(ret) == 1):
+                    if ret[0].isEmpty():
+                        return [ret[0].name + "/>"]
+                    elif len(text):
+                        return [ret[0].name + " "]
+                ret = [e.name for e in ret]
+                if len(text):
                     return ret
                 else:
                     return ret + ["/"]
