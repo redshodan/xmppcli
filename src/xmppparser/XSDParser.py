@@ -81,6 +81,7 @@ def generateSyntax(parser, name, ns, sparent):
         for child in elem.children:
             elems[child.name] = child
             if (((child.name == "xs:element") or
+                 (child.name == "xs:group") or
                  (child.name == "xs:attribute")) and
                 (child.attrs["name"].value() == name)):
                 root = child
@@ -124,7 +125,8 @@ def _recursor(schema, xelem, sparent, ns):
             if hasattr(ref, "schema"):
                 schema =ref.schema
             return _recursor(schema, ref, sparent, ns)
-    elif ((xelem.name != "xs:element") or ("name" not in xelem.attrs)):
+    elif (((xelem.name != "xs:element") and (xelem.name != "xs:group")) or
+          ("name" not in xelem.attrs)):
         for xchild in xelem.children:
             _recursor(schema, xchild, sparent, ns)
     else:
@@ -150,6 +152,7 @@ def _scanNSes(schema, xelem, sparent, ns):
 
 def _parseRestriction(schema, xelem):
     restriction = xelem.find("xs:restriction", True, ["xs:element",
+                                                      "xs:group",
                                                       "xs:attribute"])
     values = []
     if restriction:
