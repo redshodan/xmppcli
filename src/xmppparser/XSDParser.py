@@ -71,11 +71,6 @@ def generateSyntax(parser, name, ns, sparent):
         if elemns != ns:
             continue
 
-        if ns == "jabber:client":
-            is_top = True
-            ns = None
-        else:
-            is_top = False
         root = None
         elems = {}
         for child in elem.children:
@@ -94,27 +89,28 @@ def generateSyntax(parser, name, ns, sparent):
                     nsed = NSed(ns, vtype=_parseType(root))
                     schild.nsmap[ns] = nsed
                     for child in root.nsed(ns).children:
-                        _recursor(schema, child , schild, ns)
+                        _recursor(schema, child , schild, None, ns)
                     return None
-        schild = _recursor(schema, root, sparent, ns)
+        schild = _recursor(schema, root, sparent, ns, None)
         if ns == "xmppparser:base":
             base_syntax[schild.name] = schild
-        if ns:
-            if not ns in nsed_xsd:
-                nsed_xsd[ns] = {}
-            nsed_xsd[ns][schild.name] = root
-            def _putter(elem, schema):
-                elem.schema = schema
-                for child in elem.children:
-                    _putter(child, schema)
-            _putter(root, schema)
-        if is_top:
+        # Store this schema branch
+        if not ns in nsed_xsd:
+            nsed_xsd[ns] = {}
+        nsed_xsd[ns][schild.name] = root
+        # Store the top level schema on this schema branch
+        def _putter(elem, schema):
+            elem.schema = schema
+            for child in elem.children:
+                _putter(child, schema)
+        _putter(root, schema)
+        if ns == "jabber:client":
             stanzas[schild.name] = schild
         return schild
     else:
         raise Exception("Could not find elem in xsd:", name, ns)
 
-def _recursor(schema, xelem, sparent, ns):
+def _recursor(schema, xelem, sparent, ns, pns):
     _scanNSes(schema, xelem, sparent, ns)
     if xelem.name == "xs:attribute":
         return _parseAttribute(schema, xelem, sparent, ns)
@@ -124,13 +120,13 @@ def _recursor(schema, xelem, sparent, ns):
         if ref:
             if hasattr(ref, "schema"):
                 schema =ref.schema
-            return _recursor(schema, ref, sparent, ns)
+            return _recursor(schema, ref, sparent, None, pns)
     elif (((xelem.name != "xs:element") and (xelem.name != "xs:group")) or
           ("name" not in xelem.attrs)):
         for xchild in xelem.children:
-            _recursor(schema, xchild, sparent, ns)
+            _recursor(schema, xchild, sparent, ns, pns)
     else:
-        if ns:
+        if (ns and (ns != "jabber:client")):
             nsed_ns = ns
         elif "xmlns" in xelem.attrs:
             nsed_ns = xelem.attrs["xmlns"]
@@ -138,11 +134,11 @@ def _recursor(schema, xelem, sparent, ns):
             nsed_ns = None
         nsed = NSed(nsed_ns, cdata=_parseRestriction(schema, xelem),
                     vtype=_parseType(xelem))
-        schild = Elem(xelem.attrs["name"].value(), [nsed], sparent, ns)
+        schild = Elem(xelem.attrs["name"].value(), [nsed], sparent, pns)
         schild.schema = schema
         for xchild in xelem.children:
             # Dont pass on the schema NS after the first element
-            _recursor(schema, xchild, schild, None)
+            _recursor(schema, xchild, schild, None, ns)
         return schild
 
 def _scanNSes(schema, xelem, sparent, ns):

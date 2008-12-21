@@ -198,7 +198,10 @@ class NSed(object):
                 print key, ":", val.values[0],
             print
         if len(self.cdata):
-            print indent, "    cdata:", self.cdata
+            print indent, "    cdata:",
+            for cd in self.cdata:
+                print cd.pattern.doPrint(),
+            print
         for attr in self.attrs.values():
             attr.doPrint(indent)
         if recurse:
