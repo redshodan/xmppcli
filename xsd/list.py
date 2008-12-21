@@ -54,6 +54,9 @@ mappings = \
 
     ### XEP-0020
     ["iq", "feature", "http://jabber.org/protocol/feature-neg", "XEP-0020.xsd"],
+    ### XEP-0027
+    ["message", "x", "jabber:x:encrypted", "XEP-0027-encrypted.xsd"],
+    ["message", "x", "jabber:x:signed", "XEP-0027-signed.xsd"],
     ### XEP-0050
     ["iq", "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
 ]
