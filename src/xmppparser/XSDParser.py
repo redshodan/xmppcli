@@ -16,7 +16,7 @@
 
 
 import os
-from xmppparser.parser import *
+from xmppparser import *
 from . import stanzas
 from .DumbParser import DumbParser
 
