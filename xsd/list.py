@@ -35,6 +35,8 @@ mappings = \
     ["iq", "query", "jabber:iq:privacy", "RFC-3921-iq-privacy.xsd"],
     ["iq", "query", "jabber:iq:roster", "RFC-3921-iq-roster.xsd"],
 
+    ### XEP-0004
+    [None, "x", "jabber:x:data", "XEP-0004.xsd"],
     ### XEP-0009
     ["iq", "query", "jabber:iq:rpc", "XEP-0009.xsd"],
     ### XEP-0012
@@ -48,9 +50,6 @@ mappings = \
 
     ### XEP-0020
     ["iq", "feature", "http://jabber.org/protocol/feature-neg", "XEP-0020.xsd"],
-
     ### XEP-0050
     ["iq", "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
-    ### XEP-0004, depends upon XEP-0050
-    ["iq/command", "x", "jabber:x:data", "XEP-0004.xsd"],
 ]

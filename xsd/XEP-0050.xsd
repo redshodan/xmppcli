@@ -18,6 +18,10 @@
       <xs:choice>
         <xs:element ref='actions' minOccurs='0'/>
         <xs:element ref='note' minOccurs='0' maxOccurs='unbounded'/>
+        <!-- tie in for x:data -->
+        <xs:sequence xmlns:data='jabber:x:data'>
+          <xs:element ref='data:x'/>
+        </xs:sequence>
         <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
       </xs:choice>
       <xs:attribute name='action' use='optional'>

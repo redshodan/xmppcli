@@ -22,6 +22,7 @@ from .DumbParser import DumbParser
 
 
 base_syntax = {}
+nsed_xsd = {}
 required_ns = ["xmppparser:base", "jabber:client"]
 
 def parseXSDList(home, xsdlist = None):
@@ -71,7 +72,10 @@ def generateSyntax(parser, name, ns, sparent):
             continue
 
         if ns == "jabber:client":
+            is_top = True
             ns = None
+        else:
+            is_top = False
         root = None
         elems = {}
         for child in elem.children:
@@ -94,19 +98,31 @@ def generateSyntax(parser, name, ns, sparent):
         schild = _recursor(schema, root, sparent, ns)
         if ns == "xmppparser:base":
             base_syntax[schild.name] = schild
-        elif not sparent:
+        if ns:
+            if not ns in nsed_xsd:
+                nsed_xsd[ns] = {}
+            nsed_xsd[ns][schild.name] = root
+            def _putter(elem, schema):
+                elem.schema = schema
+                for child in elem.children:
+                    _putter(child, schema)
+            _putter(root, schema)
+        if is_top:
             stanzas[schild.name] = schild
         return schild
     else:
         raise Exception("Could not find elem in xsd:", name, ns)
 
 def _recursor(schema, xelem, sparent, ns):
+    _scanNSes(schema, xelem, sparent, ns)
     if xelem.name == "xs:attribute":
         return _parseAttribute(schema, xelem, sparent, ns)
     elif "ref" in xelem.attrs:
         name = xelem.attrs["ref"].value()
-        ref = _findRef(schema, name)
+        ref = _findRef(schema, name, sparent)
         if ref:
+            if hasattr(ref, "schema"):
+                schema =ref.schema
             return _recursor(schema, ref, sparent, ns)
     elif ((xelem.name != "xs:element") or ("name" not in xelem.attrs)):
         for xchild in xelem.children:
@@ -121,10 +137,16 @@ def _recursor(schema, xelem, sparent, ns):
         nsed = NSed(nsed_ns, cdata=_parseRestriction(schema, xelem),
                     vtype=_parseType(xelem))
         schild = Elem(xelem.attrs["name"].value(), [nsed], sparent, ns)
+        schild.schema = schema
         for xchild in xelem.children:
             # Dont pass on the schema NS after the first element
             _recursor(schema, xchild, schild, None)
         return schild
+
+def _scanNSes(schema, xelem, sparent, ns):
+    for key, val in xelem.attrs.iteritems():
+        if key.startswith("xmlns:"):
+            sparent.nses[key.lstrip("xmlns:")] = val
 
 def _parseRestriction(schema, xelem):
     restriction = xelem.find("xs:restriction", True, ["xs:element",
@@ -144,7 +166,7 @@ def _parseAttribute(schema, xelem, selem, ns):
     else:
         required = False
     if "ref" in xelem.attrs:
-        ref = _findRef(schema, xelem.attrs["ref"].values[0])
+        ref = _findRef(schema, xelem.attrs["ref"].values[0], None)
         sattr = Attr(ref.name, ref.values, required, ref.vtype)
     else:
         sattr = Attr(xelem.nsed(ns).attrs["name"].value(),
@@ -170,7 +192,12 @@ def _parseType(xelem):
     else:
         return VTYPE_NONE
 
-def _findRef(schema, name):
+def _findRef(schema, name, selem):
+    try:
+        ns, ename = name.split(":")
+        return nsed_xsd[selem.nses[ns].values[0]][ename]
+    except Exception, e:
+        pass
     if name in base_syntax:
         return base_syntax[name]
     for xchild in schema.children:

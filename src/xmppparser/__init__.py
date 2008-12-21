@@ -91,6 +91,10 @@ class Elem(object):
         return self.nsed().ns
 
     @property
+    def nses(self):
+        return self.nsed().nses
+
+    @property
     def attrs(self):
         return self.nsed().attrs
 
@@ -189,7 +193,10 @@ class NSed(object):
             else:
                 print "default"
         if len(self.nses):
-            print indent, "nses:", self.nses
+            print indent, "    nses:",
+            for key, val in self.nses.iteritems():
+                print key, ":", val.values[0],
+            print
         if len(self.cdata):
             print indent, "    cdata:", self.cdata
         for attr in self.attrs.values():
