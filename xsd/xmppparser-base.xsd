@@ -7,5 +7,6 @@
     elementFormDefault='qualified'>
 
   <xs:attribute name='xml:lang' type='xs:string'/>
+  <xs:element name='xs:int' type='xs:string'/>
 
 </xs:schema>

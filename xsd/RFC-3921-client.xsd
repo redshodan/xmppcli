@@ -164,6 +164,10 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name='query'>
+      <xs:attribute name='xmlns' use='required'/>
+  </xs:element>
+
   <xs:element name='error'>
     <xs:complexType>
       <xs:sequence  xmlns:err='urn:ietf:params:xml:ns:xmpp-stanzas'>

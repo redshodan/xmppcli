@@ -1,4 +1,9 @@
 XSDParser:
+- Add xmlns xmpp-stanzas to error elements xsd. Dont try to do the namespace
+  chaining right. Madness therin lies.
+- Make comments follow the full subtree before leaving comment state. Dont
+  act on contents of comment tag.
+- Grok simpleContent subject and body on message uses it
 - Follow custom types for elements/attrs. XEP 0009 depends on this.
 - make Elem.multi an optional syntax object that XSDParser creates
-- chain ns's down the tree. store named nses.
++ chain ns's down the tree. store named nses.

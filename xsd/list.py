@@ -27,8 +27,8 @@ mappings = \
     [None, "xml:lang", "xmppparser:base", "xmppparser-base.xsd"],
 
     ### RFC 3920
-    [None, "stanzaErrorGroup", "urn:ietf:params:xml:ns:xmpp-stanzas",
-     "RFC-3920-stanza-error.xsd"],
+    [None, ["empty", "stanzaErrorGroup", "text"],
+     "urn:ietf:params:xml:ns:xmpp-stanzas", "RFC-3920-stanza-error.xsd"],
 
     ### RFC 3921
     # Core stanzas

@@ -22,14 +22,17 @@ def logEx(e):
     print e
 
 
-(VTYPE_NONE, VTYPE_STR, VTYPE_INT, VTYPE_UINT, VTYPE_BOOL) = range(5)
+(VTYPE_NONE, VTYPE_STR, VTYPE_INT, VTYPE_UINT, VTYPE_FLOAT,
+ VTYPE_BOOL, VTYPE_CHOICE) = range(7)
 vtypes = \
 {
     VTYPE_NONE : "VTYPE_NONE",
     VTYPE_STR : "VTYPE_STR",
     VTYPE_INT : "VTYPE_INT",
     VTYPE_UINT : "VTYPE_UINT",
-    VTYPE_BOOL : "VTYPE_BOOL"
+    VTYPE_FLOAT : "VTYPE_FLOAT",
+    VTYPE_BOOL : "VTYPE_BOOL",
+    VTYPE_CHOICE : "VTYPE_CHOICE",
 }
 
 # Stanza syntax tree
@@ -85,6 +88,7 @@ class Elem(object):
             if self.parent.ns:
                 self.default_nsed.extendNS(self.parent.default_nsed)
         self.multi = False
+        self.looped = False
 
     @property
     def ns(self):
@@ -106,9 +110,11 @@ class Elem(object):
     def children(self):
         return self.nsed().children
 
-    @property
-    def vtype(self):
+    def vtype_get(self):
         return self.nsed().vtype
+    def vtype_set(self, vtype):
+        self.nsed().vtype = vtype
+    vtype = property(vtype_get, vtype_set)
 
     def nsed(self, ns = None):
         try:
@@ -135,7 +141,13 @@ class Elem(object):
         else:
             return True
 
-    def doPrint(self, indent = "", ns = ALL, recurse = True):
+    def doPrint(self, indent = "", ns = ALL, recurse = True, doloop = True):
+        if self.looped:
+            if doloop:
+                doloop = False
+            else:
+                print indent, "elem:", self.name, ": LOOPED"
+                return
         print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype], ":",
         if self.parent:
             print "parent=" + self.parent.name
@@ -147,11 +159,11 @@ class Elem(object):
             header = False
         if ns == self.ALL:
             if self.default_nsed not in self.nsmap.values():
-                self.default_nsed.doPrint(indent, ns, recurse, header)
+                self.default_nsed.doPrint(indent, ns, recurse, header, doloop)
             for nsed in self.nsmap.values():
-                nsed.doPrint(indent, ns, recurse)
+                nsed.doPrint(indent, ns, recurse, doloop=doloop)
         else:
-            self.nsed(ns).doPrint(indent, ns, recurse, header)
+            self.nsed(ns).doPrint(indent, ns, recurse, header, doloop)
 
 class NSed(object):
     def __init__(self, ns = None, attrs = None, cdata = None, children = None,
@@ -185,7 +197,8 @@ class NSed(object):
         else:
             return True
 
-    def doPrint(self, indent="", ns = Elem.ALL, recurse = True, header=True):
+    def doPrint(self, indent="", ns = Elem.ALL, recurse = True, header=True,
+                doloop=True):
         if header:
             print indent, "NS:",
             if self.ns:
@@ -206,7 +219,7 @@ class NSed(object):
             attr.doPrint(indent)
         if recurse:
             for child in self.children:
-                child.doPrint(indent + "  ", ns)
+                child.doPrint(indent + "  ", ns, doloop=doloop)
 
 def init(home):
     XSDParser.parseXSDList(home)
