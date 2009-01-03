@@ -49,9 +49,7 @@ mappings = \
     ["iq", "offline", "http://jabber.org/protocol/offline", "XEP-0013.xsd"],
     ["message", "offline", "http://jabber.org/protocol/offline",
      "XEP-0013.xsd"],
-
     ### XEP-0016 -- handled by RFC3921-iq-privacy
-
     ### XEP-0020
     ["iq", "feature", "http://jabber.org/protocol/feature-neg", "XEP-0020.xsd"],
     ### XEP-0027
