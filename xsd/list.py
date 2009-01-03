@@ -62,6 +62,28 @@ mappings = \
      "XEP-0030-disco-info.xsd"],
     ["iq", "query", "http://jabber.org/protocol/disco#items",
      "XEP-0030-disco-items.xsd"],
+    ### XEP-0033
+    ["message", "addresses", "http://jabber.org/protocol/address",
+     "XEP-0033.xsd"],
+    ### XEP-0045
+    ["presence", "x", "http://jabber.org/protocol/muc", "XEP-0045.xsd"],
+    ["presence", "x", "http://jabber.org/protocol/muc#user",
+     "XEP-0045-user.xsd"],
+    ["message", "x", "http://jabber.org/protocol/muc#user",
+     "XEP-0045-user.xsd"],
+    ["iq", "query", "http://jabber.org/protocol/muc#admin",
+     "XEP-0045-admin.xsd"],
+    ["iq", "query", "http://jabber.org/protocol/muc#owner",
+     "XEP-0045-owner.xsd"],
+    ["iq", "unique", "http://jabber.org/protocol/muc#unique",
+     "XEP-0045-unique.xsd"],
+    ### XEP-0047 - TBD: tie in 79
+    ["iq", ["open", "close"], "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
+    ["iq", "data", "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
+    ["message", "data", "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
+    ### XEP-0048 - TBD: tie in to ??
+    ### XEP-0049
+    ["iq", "query", "jabber:iq:private", "XEP-0049.xsd"],
     ### XEP-0050
     ["iq", "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
 ]
