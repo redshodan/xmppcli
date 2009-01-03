@@ -89,7 +89,7 @@ def generateSyntax(parser, name, ns, sparent):
                     nsed = NSed(ns, vtype=_parseType(root))
                     schild.nsmap[ns] = nsed
                     for child in root.nsed(ns).children:
-                        _recursor(schema, child , schild, None, ns)
+                        _recursor(schema, child , schild, ns, ns)
                     return None
         schild = _recursor(schema, root, sparent, ns, None)
         if ns == "xmppparser:base":
