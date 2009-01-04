@@ -98,7 +98,7 @@ def generateSyntax(parser, name, ns, sparent):
                     nsed = NSed(ns, vtype=_parseType(root))
                     schild.nsmap[ns] = nsed
                     for child in root.nsed(ns).children:
-                        _recursor(schema, child , schild, ns, ns, False)
+                        _recursor(schema, child , schild, None, ns, False)
                     return None
         schild = _recursor(schema, root, sparent, ns, None, False)
         if ns == "xmppparser:base":
@@ -119,7 +119,7 @@ def _recursor(schema, xelem, sparent, ns, pns, is_ref):
     global _recursor_stack
     _scanNSes(xelem, sparent)
     if xelem.name == "xs:attribute":
-        return _parseAttribute(schema, xelem, sparent, ns)
+        return _parseAttribute(schema, xelem, sparent, pns)
     elif (("ref" in xelem.attrs) or ("type" in xelem.attrs)):
         ref = None
         if "ref" in xelem.attrs:
@@ -166,26 +166,25 @@ def _recursor(schema, xelem, sparent, ns, pns, is_ref):
         for xchild in xelem.children:
             _recursor(schema, xchild, sparent, ns, pns, is_ref)
         return
-    if True:
-        if (ns and (ns != "jabber:client")):
-            nsed_ns = ns
-        elif "xmlns" in xelem.attrs:
-            nsed_ns = xelem.attrs["xmlns"]
-        else:
-            nsed_ns = None
-        nsed = NSed(nsed_ns, cdata=_parseRestriction(schema, xelem),
-                    vtype=_parseType(xelem))
-        name = xelem.attrs["name"].value()
-        schild = Elem(name, [nsed], sparent, pns)
-        schild.schema = schema
-        if is_ref:
-            _recursor_stack.append((name, schild))
-        for xchild in xelem.children:
-            # Dont pass on the schema NS after the first element
-            _recursor(schema, xchild, schild, None, ns, False)
-        if is_ref:
-            _recursor_stack = _recursor_stack[:-1]
-        return schild
+    if (ns and (ns != "jabber:client")):
+        nsed_ns = ns
+    elif "xmlns" in xelem.attrs:
+        nsed_ns = xelem.attrs["xmlns"]
+    else:
+        nsed_ns = None
+    nsed = NSed(nsed_ns, cdata=_parseRestriction(schema, xelem),
+                vtype=_parseType(xelem))
+    name = xelem.attrs["name"].value()
+    schild = Elem(name, [nsed], sparent, pns)
+    schild.schema = schema
+    if is_ref:
+        _recursor_stack.append((name, schild))
+    for xchild in xelem.children:
+        # Dont pass on the schema NS after the first element
+        _recursor(schema, xchild, schild, None, ns, False)
+    if is_ref:
+        _recursor_stack = _recursor_stack[:-1]
+    return schild
 
 def _scanNSes(xelem, sparent):
     for key, val in xelem.attrs.iteritems():
