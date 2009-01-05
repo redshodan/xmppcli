@@ -18,7 +18,7 @@
 ### Mapping of xsd into complete syntax hierarchy. Order is important. The
 ### most used elements MUST be before ones that depend upon them.
 ###
-### [root_name, node_name, node_ns, file_name]
+### [root_name, node_name, node_ns, file_name, mapped-to-ns]
 ###
 
 mappings = \
@@ -38,6 +38,9 @@ mappings = \
     # Core IQ types
     ["iq", "query", "jabber:iq:privacy", "RFC-3921-iq-privacy.xsd"],
     ["iq", "query", "jabber:iq:roster", "RFC-3921-iq-roster.xsd"],
+
+    ### XEP-0059
+    ["iq/query", "set", "http://jabber.org/protocol/rsm", "XEP-0059.xsd"],
 
     ### XEP-0004
     [None, "x", "jabber:x:data", "XEP-0004.xsd"],
@@ -87,4 +90,5 @@ mappings = \
     ### XEP-0054 - TBD: Need to convert DTD to XSD
     ### XEP-0055
     ["iq", "query", "jabber:iq:search", "XEP-0055.xsd"],
+    ### XEP-0059 - out of order
 ]

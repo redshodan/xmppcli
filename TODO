@@ -4,6 +4,8 @@ XSDParser:
 - Make comments follow the full subtree before leaving comment state. Dont
   act on contents of comment tag.
 - Grok simpleContent subject and body on message uses it
-- Follow custom types for elements/attrs. XEP 0009 depends on this.
 - make Elem.multi an optional syntax object that XSDParser creates
+- Properly grok min/max occurs, usage restrictions, <xs:all>, <xs:choice>, etc.
+- Load up the set of disco features for tab completing.
 + chain ns's down the tree. store named nses.
++ Follow custom types for elements/attrs. XEP 0009 depends on this.

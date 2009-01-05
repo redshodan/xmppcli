@@ -15,6 +15,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+_debug = False
+
+
 def logEx(e):
     import traceback
     print
@@ -148,9 +151,9 @@ class Elem(object):
             else:
                 print indent, "elem:", self.name, ": LOOPED"
                 return
-        print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype], ":",
-        if self.parent:
-            print "parent=" + self.parent.name
+        print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype],
+        if _debug and self.parent:
+            print ": parent=" + self.parent.name
         else:
             print
         if len(self.nsmap):
@@ -205,7 +208,7 @@ class NSed(object):
                 print self.ns
             else:
                 print "default"
-        if len(self.nses):
+        if _debug and len(self.nses):
             print indent, "    nses:",
             for key, val in self.nses.iteritems():
                 print key, ":", val.values[0],

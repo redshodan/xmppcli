@@ -203,13 +203,12 @@ class DumbParser(object):
                     if self.last_non_space_c == ">":
                         readline.insert_text("<")
                     return ret
+            xmlns = None
             if "xmlns" in elem.nsed().attrs:
                 attr = elem.nsed().attrs["xmlns"]
                 if attr:
                     xmlns = attr.value().lstrip("'").rstrip("'")
                     xmlns = xmlns.lstrip('"').rstrip('"')
-            else:
-                xmlns = None
             if self.state == self.STATE_NAME:
                 names = [c.name for c in elem.nsed().children]
                 ret = [e for e in syn.nsed(xmlns).children
@@ -248,7 +247,8 @@ class DumbParser(object):
                     quote = "'"
                 nqt = text.lstrip(quote)
                 vallist = None
-                if ((self.cur_attr_name == "xmlns") or
+                if (len(syn.nsmap) and
+                    (self.cur_attr_name == "xmlns") or
                     self.cur_attr_name.startswith("xmlns:")):
                     vallist = syn.nsmap.keys()
                 else:
