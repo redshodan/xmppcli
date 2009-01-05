@@ -40,7 +40,7 @@ mappings = \
     ["iq", "query", "jabber:iq:roster", "RFC-3921-iq-roster.xsd"],
 
     ### XEP-0059
-    ["iq/query", "set", "http://jabber.org/protocol/rsm", "XEP-0059.xsd"],
+    [None, None, "http://jabber.org/protocol/rsm", "XEP-0059.xsd"],
 
     ### XEP-0004
     [None, "x", "jabber:x:data", "XEP-0004.xsd"],
@@ -91,4 +91,13 @@ mappings = \
     ### XEP-0055
     ["iq", "query", "jabber:iq:search", "XEP-0055.xsd"],
     ### XEP-0059 - out of order
+    ### XEP-0060
+    [None, None, "http://jabber.org/protocol/pubsub#errors",
+     "XEP-0060-errors.xsd"],
+    ["iq", "error", "jabber:client", "XEP-0060-error-elem.xsd"],
+    ["iq", "pubsub", "http://jabber.org/protocol/pubsub", "XEP-0060.xsd"],
+    ["iq", "pubsub", "http://jabber.org/protocol/pubsub#owner",
+     "XEP-0060-owner.xsd"],
+    ["message", "event", "http://jabber.org/protocol/pubsub#event",
+     "XEP-0060-event.xsd"],
 ]

@@ -216,7 +216,10 @@ class NSed(object):
         if len(self.cdata):
             print indent, "    cdata:",
             for cd in self.cdata:
-                print cd,
+                if isinstance(cd, str):
+                    print cd,
+                else:
+                    print "pattern(%s)" % cd.pattern,
             print
         for attr in self.attrs.values():
             attr.doPrint(indent)

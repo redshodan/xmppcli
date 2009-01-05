@@ -83,21 +83,30 @@ def generateSyntax(parser, name, ns, sparent):
         root = None
         for child in elem.children:
             if "name" in child.attrs:
+                child.schema = schema
                 cname = child.attrs["name"].value()
                 nsed_xsd[ns][cname] = child
                 if not root and cname == name:
                     root = child
         if not root:
-            raise Exception("Invalid XSD spec. Missing root element " + name)
+            if name:
+                raise Exception("Invalid XSD spec. Missing root element " +
+                                name)
+            else:
+                return
 
         _scanNSes(schema, root)
 
         if sparent:
             for schild in sparent.children:
                 if schild.name == name:
-                    nsed = NSed(ns, vtype=_parseType(root))
-                    schild.nsmap[ns] = nsed
-                    for child in root.nsed(ns).children:
+                    if ns == "jabber:client":
+                        nsed_ns = None
+                    else:
+                        nsed_ns = ns
+                        nsed = NSed(nsed_ns, vtype=_parseType(root))
+                        schild.nsmap[ns] = nsed
+                    for child in root.nsed(nsed_ns).children:
                         _recursor(schema, child , schild, None, ns, False)
                     return None
         schild = _recursor(schema, root, sparent, ns, None, False)
