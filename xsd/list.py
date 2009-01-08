@@ -100,4 +100,8 @@ mappings = \
      "XEP-0060-owner.xsd"],
     ["message", "event", "http://jabber.org/protocol/pubsub#event",
      "XEP-0060-event.xsd"],
+    ### XEP-0065
+    ["iq", "query", "http://jabber.org/protocol/bytestreams", "XEP-0065.xsd"],
+    ["message", "udpsuccess", "http://jabber.org/protocol/bytestreams",
+     "XEP-0065.xsd"],
 ]
