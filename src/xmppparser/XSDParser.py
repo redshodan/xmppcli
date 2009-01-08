@@ -106,6 +106,7 @@ def generateSyntax(parser, name, ns, sparent):
                         nsed_ns = ns
                         nsed = NSed(nsed_ns, vtype=_parseType(root))
                         schild.nsmap[ns] = nsed
+                        nsed.parent = schild
                     for child in root.nsed(nsed_ns).children:
                         _recursor(schema, child , schild, None, ns, False)
                     return None

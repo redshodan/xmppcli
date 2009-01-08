@@ -75,6 +75,7 @@ class Elem(object):
         self.nsmap = {}
         if nsmap:
             for nsed in nsmap:
+                nsed.parent = self
                 if nsed.ns:
                     self.nsmap[nsed.ns] = nsed
                     if not self.default_nsed:
@@ -83,6 +84,7 @@ class Elem(object):
                     self.default_nsed = nsed
         if not self.default_nsed:
             self.default_nsed = NSed()
+            self.default_nsed.parent = self
         self.parent = parent
         if self.parent:
             self.parent.nsed(ns).children.append(self)
@@ -188,6 +190,7 @@ class NSed(object):
         else:
             self.children = []
         self.vtype = vtype
+        self.parent = None
 
     def extendNS(self, parent_nsed):
         for key, val in parent_nsed.nses.iteritems():
@@ -203,7 +206,7 @@ class NSed(object):
     def doPrint(self, indent="", ns = Elem.ALL, recurse = True, header=True,
                 doloop=True):
         if header:
-            print indent, "NS:",
+            print indent, "NS(%s):" % (self.parent.name),
             if self.ns:
                 print self.ns
             else:

@@ -104,4 +104,7 @@ mappings = \
     ["iq", "query", "http://jabber.org/protocol/bytestreams", "XEP-0065.xsd"],
     ["message", "udpsuccess", "http://jabber.org/protocol/bytestreams",
      "XEP-0065.xsd"],
+    ### XEP-0066
+    ["iq", "query", "jabber:iq:oob", "XEP-0066-iq-oob.xsd"],
+    ["message", "x", "jabber:x:oob", "XEP-0066-x-oob.xsd"],
 ]
