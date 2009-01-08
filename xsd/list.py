@@ -107,4 +107,8 @@ mappings = \
     ### XEP-0066
     ["iq", "query", "jabber:iq:oob", "XEP-0066-iq-oob.xsd"],
     ["message", "x", "jabber:x:oob", "XEP-0066-x-oob.xsd"],
+    ### XEP-0070
+    ["iq", "confirm", "http://jabber.org/protocol/http-auth", "XEP-0070.xsd"],
+    ["message", "confirm", "http://jabber.org/protocol/http-auth",
+     "XEP-0070.xsd"],
 ]
