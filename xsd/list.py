@@ -111,4 +111,12 @@ mappings = \
     ["iq", "confirm", "http://jabber.org/protocol/http-auth", "XEP-0070.xsd"],
     ["message", "confirm", "http://jabber.org/protocol/http-auth",
      "XEP-0070.xsd"],
+    ### XEP-0071 - TBD: ugh, a tad bit complex
+    ### XEP-0072 - TBD: get the soap xsd when I have network
+    ### XEP-0077 - Ignoring since its part of stream setup
+    ### XEP-0079
+    [None, None, "http://jabber.org/protocol/amp#errors",
+     "XEP-0079-errors.xsd"],
+    ["message", "amp", "http://jabber.org/protocol/amp", "XEP-0079.xsd"],
+    ["iq", "error", "jabber:client", "XEP-0079-error-elem.xsd"],
 ]

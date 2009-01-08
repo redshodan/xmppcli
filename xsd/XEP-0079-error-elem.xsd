@@ -1,0 +1,20 @@
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='jabber:client'
+    xmlns='jabber:client'
+    elementFormDefault='qualified'>
+
+  <xs:element name='error'>
+    <xs:complexType>
+      <xs:sequence xmlns:err='urn:ietf:params:xml:ns:xmpp-stanzas'
+                   xmlns:amp='http://jabber.org/protocol/amp'
+                   xmlns:amperr='http://jabber.org/protocol/amp#errors'>
+        <xs:element ref='amp:invalid-rules'/>
+        <xs:element ref='amp:unsupported-actions'/>
+        <xs:element ref='amp:unsupported-conditions'/>
+        <xs:element ref='amperr:failed-rules'/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
