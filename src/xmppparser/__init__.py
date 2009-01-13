@@ -41,6 +41,16 @@ vtypes = \
 # Stanza syntax tree
 stanzas = {}
 
+class HList(list):
+    def __init__(self, *args):
+        self.extend(args)
+
+    def __hash__(self):
+        ret = 0
+        for item in self:
+            ret += item.__hash__()
+        return ret
+
 class ValuePattern(object):
     def __init__(self, pattern):
         self.pattern = pattern
@@ -63,7 +73,7 @@ class Attr(object):
             return None
 
     def doPrint(self, indent=""):
-        print indent + "     attr:", self.name, self.values, self.required,
+        print indent + "     attr(%s):" % self.name, self.values, self.required,
         print vtypes[self.vtype]
 
 class Elem(object):
@@ -72,6 +82,7 @@ class Elem(object):
     def __init__(self, name, nsmap = None, parent = None, ns = None):
         self.name = name
         self.default_nsed = None
+        #self.nsmap = NSMap()
         self.nsmap = {}
         if nsmap:
             for nsed in nsmap:
@@ -92,8 +103,25 @@ class Elem(object):
                 nsed.extendNS(self.parent.nsed(nsed.ns))
             if self.parent.ns:
                 self.default_nsed.extendNS(self.parent.default_nsed)
+        self.pns = ns
         self.multi = False
         self.looped = False
+
+    def deepCopy(self, parent, pns = None):
+        copy = Elem("COPY")
+        copy.name = self.name
+        copy.default_nsed = self.default_nsed.deepCopy(copy)
+        for key, val in self.nsmap.iteritems():
+            copy.nsmap[key] = val.deepCopy(copy)
+        copy.parent = parent
+        copy.pns = self.pns
+        if parent:
+            if not pns:
+                pns = self.pns
+            parent.nsed(pns).children.append(copy)
+        copy.multi = self.multi
+        copy.looped = self.looped
+        return copy
 
     @property
     def ns(self):
@@ -128,17 +156,26 @@ class Elem(object):
             pass
         return self.default_nsed
 
-    def find(self, name, recurse = False, filter = []):
-        def recursor():
-            for child in self.children:
-                if child.name not in filter:
-                    return child.find(name, recurse, filter)
-        for child in self.children:
+    def find(self, name, recurse=False, filter=[], ns=None):
+        for child in self.nsed(ns).children:
             if child.name == name:
                 return child
         if recurse:
-            return recursor()
+            for child in self.children:
+                if child.name not in filter:
+                    return child.find(name, recurse, filter, ns)
         return None
+
+    def findOrMakeNSed(self, ns):
+        if not ns:
+            return self.default_nsed
+        elif ns in self.nsmap:
+            return self.nsmap[ns]
+        else:
+            nsed = NSed(ns)
+            self.nsmap[ns] = nsed
+            nsed.parent = self
+            return nsed
 
     def isEmpty(self):
         if len(self.nsmap) or not self.default_nsed.isEmpty():
@@ -147,13 +184,18 @@ class Elem(object):
             return True
 
     def doPrint(self, indent = "", ns = ALL, recurse = True, doloop = True):
+        if self.parent:
+            pname = self.parent.name
+        else:
+            pname = ""
         if self.looped:
             if doloop:
                 doloop = False
             else:
-                print indent, "elem:", self.name, ": LOOPED"
+                print indent, "elem(%s):" % self.name, pname, ": LOOPED"
                 return
-        print indent, "elem:", self.name, ":", vtypes[self.nsed(ns).vtype],
+        print indent, "elem(%s):" % self.name, pname, ":",
+        print vtypes[self.nsed(ns).vtype],
         if _debug and self.parent:
             print ": parent=" + self.parent.name
         else:
@@ -192,6 +234,18 @@ class NSed(object):
         self.vtype = vtype
         self.parent = None
 
+    def deepCopy(self, parent):
+        copy = NSed()
+        copy.ns = self.ns
+        copy.nses.update(self.nses)
+        copy.attrs.update(self.attrs)
+        copy.cdata.extend(self.cdata)
+        for child in self.children:
+            copy.children.append(child.deepCopy())
+        copy.vtype = self.vtype
+        copy.parent = parent
+        return copy
+
     def extendNS(self, parent_nsed):
         for key, val in parent_nsed.nses.iteritems():
             if val != self.ns:
@@ -206,11 +260,11 @@ class NSed(object):
     def doPrint(self, indent="", ns = Elem.ALL, recurse = True, header=True,
                 doloop=True):
         if header:
-            print indent, "NS(%s):" % (self.parent.name),
             if self.ns:
-                print self.ns
+                pns = self.ns
             else:
-                print "default"
+                pns = "default"
+            print indent, "NS(%s):" % pns, self.parent.name
         if _debug and len(self.nses):
             print indent, "    nses:",
             for key, val in self.nses.iteritems():

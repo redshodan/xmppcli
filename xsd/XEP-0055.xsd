@@ -28,10 +28,6 @@
           <xs:element ref='xdata:x' minOccurs='0'/>
         </xs:all>
         <xs:element ref='item' minOccurs='0' maxOccurs='unbounded'/>
-        <!-- tie in for XEP-0059 -->
-        <xs:choice xmlns:rsm='http://jabber.org/protocol/rsm'>
-          <xs:element ref='rsm:set'/>
-        </xs:choice>
       </xs:choice>
     </xs:complexType>
   </xs:element>

@@ -39,18 +39,44 @@ def parseXSDList(home, xsdlist = None):
             continue
         filename = os.path.join(home, "xsd", mapping[3])
         parser = parse(filename)
+        root = None
+        nsed = None
         if rootname:
-            path = rootname.split("/")
-            root = stanzas[path[0]]
-            path = path[1:]
-            for part in path:
-                root = root.find(part)
+            # Walk the path and create elements or NSeds if need be
+            for rn in rootname:
+                if isinstance(rn, list):
+                    name, rns = rn
+                else:
+                    name, rns = (rn, None)
+                if not root:
+                    root = stanzas[name]
+                    nsed = root.findOrMakeNSed(rns)
+                    continue
+                for child in nsed.children:
+                    if child.name == name:
+                        root = child
+                        break
+                else:
+                    for child in root.children:
+                        if child.name == name:
+                            tmp = child.deepCopy(root, nsed.ns)
+                            tmp.parent = root
+                            root = tmp
+                            break
+                    else:
+                        raise Exception("Failed to find path: %s" %
+                                        (str(rootname)))
+                nsed = root.findOrMakeNSed(rns)
+        if root and nsed and nsed == root.default_nsed:
+            nsed = None
+        if nsed:
+            rns = nsed.ns
         else:
-            root = None
+            rns = None
         if not isinstance(nodename, list):
             nodename = [nodename]
         for node in nodename:
-            generateSyntax(parser, node, ns, root)
+            generateSyntax(parser, node, ns, root, rns)
 
 def parse(filename):
     parser = DumbParser()
@@ -59,7 +85,7 @@ def parse(filename):
     fp.close()
     return parser
 
-def generateSyntax(parser, name, ns, sparent):
+def generateSyntax(parser, name, ns, sparent, sns):
     global _recursor_stack
     _recursor_stack = []
     # Follow each xsd schema
@@ -97,7 +123,10 @@ def generateSyntax(parser, name, ns, sparent):
 
         _scanNSes(schema, root)
 
-        if sparent:
+        if sns:
+            _recursor(schema, root, sparent, None, sns, False)
+            return
+        elif sparent:
             for schild in sparent.children:
                 if schild.name == name:
                     if ns == "jabber:client":
@@ -108,7 +137,7 @@ def generateSyntax(parser, name, ns, sparent):
                         schild.nsmap[ns] = nsed
                         nsed.parent = schild
                     for child in root.nsed(nsed_ns).children:
-                        _recursor(schema, child , schild, None, ns, False)
+                        _recursor(schema, child, schild, None, ns, False)
                     return None
         schild = _recursor(schema, root, sparent, ns, None, False)
         if ns == "xmppparser:base":

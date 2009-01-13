@@ -17,10 +17,6 @@
     <xs:complexType>
       <xs:sequence minOccurs='0'>
         <xs:element ref='item' minOccurs='0' maxOccurs='unbounded'/>
-        <!-- tie in for XEP-0059 -->
-        <xs:choice xmlns:rsm='http://jabber.org/protocol/rsm'>
-          <xs:element ref='rsm:set'/>
-        </xs:choice>
       </xs:sequence>
       <xs:attribute name='node' type='xs:string' use='optional'/>
     </xs:complexType>
