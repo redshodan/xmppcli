@@ -152,4 +152,7 @@ mappings = \
     [psEvent("http://jabber.org/protocol/geoloc"), "geoloc",
      "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
     ### XEP-0082 - Ignoring since it has no schema itself.
+    ### XEP-0083
+    [["iq", ["query", "jabber:iq:private"]], "roster", "roster:delimiter",
+     "XEP-0083.xsd"],
 ]
