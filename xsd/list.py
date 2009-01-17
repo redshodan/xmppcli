@@ -162,4 +162,7 @@ mappings = \
      "urn:xmpp:avatar:metadata", "XEP-0084-metadata.xsd"],
     [psEvent("urn:xmpp:avatar:metadata"), "metadata",
      "urn:xmpp:avatar:metadata", "XEP-0084-metadata.xsd"],
+    ### XEP-0085
+    [["message"], ["active", "composing", "gone", "inactive", "paused"],
+     "http://jabber.org/protocol/chatstates", "XEP-0085.xsd"],
 ]
