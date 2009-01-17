@@ -165,4 +165,6 @@ mappings = \
     ### XEP-0085
     [["message"], ["active", "composing", "gone", "inactive", "paused"],
      "http://jabber.org/protocol/chatstates", "XEP-0085.xsd"],
+    ### XEP-0092
+    [["iq"], "query", "jabber:iq:version", "XEP-0092.xsd"],
 ]
