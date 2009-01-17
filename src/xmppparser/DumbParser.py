@@ -82,7 +82,7 @@ class DumbParser(object):
                     self.quote = 0
                     if self.state == self.STATE_ATTR_VAL:
                         self.state = self.STATE_ATTR_NAME
-                        self.cur_elem.nsed().attrs[self.cur_attr_name] = \
+                        self.cur_elem.attrs[self.cur_attr_name] = \
                                Attr(self.cur_attr_name, [self.cur_attr_val])
                         self.cur_attr_name = ""
                         self.cur_attr_val = ""
@@ -111,7 +111,7 @@ class DumbParser(object):
                 self.cur_name = ""
                 self.state = self.STATE_NAME
                 if len(self.cdata):
-                    self.cur_elem.nsed().cdata.append(self.cdata)
+                    self.cur_elem.cdata.append(self.cdata)
                 self.cdata = ""
             elif self.state == self.STATE_CLOSING:
                 pass
@@ -132,7 +132,7 @@ class DumbParser(object):
                 self.state = self.STATE_CLOSING
             elif c == "=":
                 if self.state == self.STATE_ATTR_NAME:
-                    self.cur_elem.nsed().attrs[self.cur_attr_name] = None
+                    self.cur_elem.attrs[self.cur_attr_name] = None
                 self.cur_attr_val = ""
                 self.state = self.STATE_ATTR_VAL
             elif ((c == "!") and self.last_c == "<"):
@@ -185,18 +185,18 @@ class DumbParser(object):
                             return None, None
                 if elem is target:
                     return elem, syn
-                elif len(elem.nsed().children):
-                    return recursor(elem.nsed().children[-1:][0], syn, target)
+                elif len(elem.children):
+                    return recursor(elem.children[-1:][0], syn, target)
                 else:
                     return elem, syn
             if ((self.cur_elem != self.root) and
-                len(self.root.nsed().children)):
+                len(self.root.children)):
                 if self.state == self.STATE_CLOSING:
                     target = self.prev_elem
                 else:
                     target = None
                 target = self.cur_elem
-                elem, syn = recursor(self.root.nsed().children[-1:][0], None,
+                elem, syn = recursor(self.root.children[-1:][0], None,
                                      target)
             else:
                 elem, syn = None, None
@@ -210,13 +210,13 @@ class DumbParser(object):
                         readline.insert_text("<")
                     return ret
             xmlns = None
-            if "xmlns" in elem.nsed().attrs:
-                attr = elem.nsed().attrs["xmlns"]
+            if "xmlns" in elem.attrs:
+                attr = elem.attrs["xmlns"]
                 if attr:
                     xmlns = attr.value().lstrip("'").rstrip("'")
                     xmlns = xmlns.lstrip('"').rstrip('"')
             if self.state == self.STATE_NAME:
-                names = [c.name for c in elem.nsed().children]
+                names = [c.name for c in elem.children]
                 ret = [e for e in syn.nsed(xmlns).children
                        if (e.name.startswith(text) and
                            (e.multi or e.name not in names))]
@@ -237,7 +237,7 @@ class DumbParser(object):
                     return [">"]
                 ret = [attr.name for attr in syn.nsed(xmlns).attrs.values()
                        if attr.name.startswith(text) and
-                           attr.name not in elem.nsed().attrs.keys()]
+                           attr.name not in elem.attrs.keys()]
                 if len(ret) == 0:
                     return [">"]
                 elif text in ret:
@@ -281,12 +281,12 @@ class DumbParser(object):
                     if self.last_non_space_c == "/":
                         return ["/>"]
                     if self.last_non_space_c == ">":
-                        return [i.name for i in self.cur_elem.nsed().children
+                        return [i.name for i in self.cur_elem.children
                                 if ((not text) or
                                     (text and i.name.startswith(text)))]
                     else:
                         return [i.name for i in
-                                self.cur_elem.parent.nsed().children
+                                self.cur_elem.parent.children
                                 if ((not text) or
                                     (text and i.name.startswith(text)))]
             elif self.state == self.STATE_CDATA:
