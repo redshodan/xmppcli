@@ -88,14 +88,17 @@ mappings = \
      "XEP-0045-owner.xsd"],
     [["iq"], "unique", "http://jabber.org/protocol/muc#unique",
      "XEP-0045-unique.xsd"],
-    ### XEP-0047 - TBD: tie in 79
+    ### XEP-0047
     [["iq"], ["open", "close"], "http://jabber.org/protocol/ibb",
      "XEP-0047.xsd"],
     [["iq"], "data", "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
     [["message"], "data", "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
-    ### XEP-0048 - out of order, after pubsub.
+    ### XEP-0048 - out of order, after XEP-0060 and XEP-0049
     ### XEP-0049
     [["iq"], "query", "jabber:iq:private", "XEP-0049.xsd"],
+    ### XEP-0048
+    [["iq", ["query", "jabber:iq:private"]], "storage", "storage:bookmarks",
+     "XEP-0048.xsd"],
     ### XEP-0050
     [["iq"], "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
     ### XEP-0054 - TBD: Need to convert DTD to XSD
