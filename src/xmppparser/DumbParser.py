@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re, readline
-from . import Attr, Elem, NSed
+from . import Attr, Elem, NSed, HList
 from . import stanzas
 from . import logEx
 
@@ -157,11 +157,17 @@ class DumbParser(object):
     def complete(self, text):
         try:
             def recursor(elem, syn = None, target = None):
-                if "xmlns" in elem.parent.nsed().attrs:
-                    attr = elem.parent.nsed().attrs["xmlns"]
+                if "xmlns" in elem.parent.attrs:
+                    attr = elem.parent.attrs["xmlns"]
                     if attr:
                         xmlns = attr.value().lstrip("'").rstrip("'")
                         xmlns = xmlns.lstrip('"').rstrip('"')
+                elif "node" in elem.parent.attrs:
+                    attr = elem.parent.attrs["node"]
+                    if attr:
+                        xmlns = attr.value().lstrip("'").rstrip("'")
+                        xmlns = xmlns.lstrip('"').rstrip('"')
+                        xmlns = HList("node", xmlns)
                 else:
                     xmlns = None
                 if not syn:

@@ -82,7 +82,6 @@ class Elem(object):
     def __init__(self, name, nsmap = None, parent = None, ns = None):
         self.name = name
         self.default_nsed = None
-        #self.nsmap = NSMap()
         self.nsmap = {}
         if nsmap:
             for nsed in nsmap:
@@ -175,6 +174,14 @@ class Elem(object):
             nsed = NSed(ns)
             self.nsmap[ns] = nsed
             nsed.parent = self
+            if isinstance(ns, list):
+                key, val = ns
+            else:
+                key, val = ("xmlns", ns)
+            if key in self.attrs:
+                self.attrs[key].values.append(val)
+            else:
+                self.attrs[key] = Attr(key, [val])
             return nsed
 
     def isEmpty(self):
@@ -222,7 +229,13 @@ class NSed(object):
             for attr in attrs:
                 self.attrs[attr.name] = attr
         if self.ns:
-            self.attrs["xmlns"] = Attr("xmlns", [ns])
+            if isinstance(self.ns, list):
+                key = self.ns[0]
+                val = self.ns[1]
+            else:
+                key = "xmlns"
+                val = self.ns
+            self.attrs[key] = Attr(key, [val])
         if cdata:
             self.cdata = cdata
         else:

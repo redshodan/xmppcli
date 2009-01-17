@@ -130,4 +130,9 @@ mappings = \
       ["publish", HList("node", "http://jabber.org/protocol/geoloc")],
       "item"],
      "geoloc", "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
+    [["message",
+      ["event", "http://jabber.org/protocol/pubsub#event"],
+      ["items", HList("node", "http://jabber.org/protocol/geoloc")],
+      "item"],
+     "geoloc", "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
 ]
