@@ -23,6 +23,16 @@
 
 from xmppparser import HList
 
+
+def psPublish(node):
+    return ["iq", ["pubsub", "http://jabber.org/protocol/pubsub"],
+            ["publish", HList("node", node)], "item"]
+
+def psEvent(node):
+    return ["message", ["event", "http://jabber.org/protocol/pubsub#event"],
+            ["items", HList("node", node)], "item"]
+
+
 mappings = \
 [
     ### Basic xsd types
@@ -83,7 +93,7 @@ mappings = \
      "XEP-0047.xsd"],
     [["iq"], "data", "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
     [["message"], "data", "http://jabber.org/protocol/ibb", "XEP-0047.xsd"],
-    ### XEP-0048 - TBD: tie in to ??
+    ### XEP-0048 - out of order, after pubsub.
     ### XEP-0049
     [["iq"], "query", "jabber:iq:private", "XEP-0049.xsd"],
     ### XEP-0050
@@ -105,6 +115,11 @@ mappings = \
      "XEP-0060-owner.xsd"],
     [["message"], "event", "http://jabber.org/protocol/pubsub#event",
      "XEP-0060-event.xsd"],
+    ### XEP-0048
+    [psPublish("storage:bookmarks"), "storage", "storage:bookmarks",
+     "XEP-0048.xsd"],
+    [psEvent("storage:bookmarks"), "storage", "storage:bookmarks",
+     "XEP-0048.xsd"],
     ### XEP-0065
     [["iq"], "query", "http://jabber.org/protocol/bytestreams", "XEP-0065.xsd"],
     [["message"], "udpsuccess", "http://jabber.org/protocol/bytestreams",
@@ -125,14 +140,8 @@ mappings = \
     [["message"], "amp", "http://jabber.org/protocol/amp", "XEP-0079.xsd"],
     [["iq"], "error", "jabber:client", "XEP-0079-error-elem.xsd"],
     ### XEP-0080
-    [["iq",
-      ["pubsub", "http://jabber.org/protocol/pubsub"],
-      ["publish", HList("node", "http://jabber.org/protocol/geoloc")],
-      "item"],
-     "geoloc", "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
-    [["message",
-      ["event", "http://jabber.org/protocol/pubsub#event"],
-      ["items", HList("node", "http://jabber.org/protocol/geoloc")],
-      "item"],
-     "geoloc", "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
+    [psPublish("http://jabber.org/protocol/geoloc"), "geoloc",
+     "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
+    [psEvent("http://jabber.org/protocol/geoloc"), "geoloc",
+     "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
 ]
