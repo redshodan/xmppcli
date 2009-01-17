@@ -167,4 +167,11 @@ mappings = \
      "http://jabber.org/protocol/chatstates", "XEP-0085.xsd"],
     ### XEP-0092
     [["iq"], "query", "jabber:iq:version", "XEP-0092.xsd"],
+    ### XEP-0095
+    [["iq"], "si", "http://jabber.org/protocol/si", "XEP-0095.xsd"],
+    [["iq"], "error", "jabber:client", "XEP-0095-error-elem.xsd"],
+    ### XEP-0096
+    [["iq"], "si", "http://jabber.org/protocol/si", "XEP-0096-profile.xsd"],
+    [["iq", ["si", "http://jabber.org/protocol/si"]], "file",
+     "http://jabber.org/protocol/si/profile/file-transfer", "XEP-0096.xsd"],
 ]
