@@ -204,15 +204,18 @@ def _recursor(schema, xelem, sparent, ns, pns, is_ref):
         for xchild in xelem.children:
             _recursor(schema, xchild, sparent, ns, pns, is_ref)
         return
-    if (ns and (ns != "jabber:client")):
+    name = xelem.attrs["name"].value()
+    nsed_ns = None
+    if ":" in name:
+        xmlns = "xmlns:" + name.split(":")[0]
+        if xmlns in xelem.attrs:
+            nsed_ns = xelem.attrs[xmlns]
+    elif (ns and (ns != "jabber:client")):
         nsed_ns = ns
     elif "xmlns" in xelem.attrs:
         nsed_ns = xelem.attrs["xmlns"]
-    else:
-        nsed_ns = None
     nsed = NSed(nsed_ns, cdata=_parseRestriction(schema, xelem),
                 vtype=_parseType(xelem))
-    name = xelem.attrs["name"].value()
     schild = Elem(name, [nsed], sparent, pns)
     schild.schema = schema
     if is_ref:

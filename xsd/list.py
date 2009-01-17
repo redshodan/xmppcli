@@ -132,7 +132,11 @@ mappings = \
     [["message"], "confirm", "http://jabber.org/protocol/http-auth",
      "XEP-0070.xsd"],
     ### XEP-0071 - TBD: ugh, a tad bit complex
-    ### XEP-0072 - TBD: get the soap xsd when I have network
+    ### XEP-0072
+    [["iq"], "env:Envelope", "http://www.w3.org/2003/05/soap-envelope",
+     "soap-envelope.xsd"],
+    [None, None, "http://jabber.org/protocol/soap#fault", "XEP-0072.xsd"],
+    [["iq"], "error", "jabber:client", "XEP-0072-error-elem.xsd"],
     ### XEP-0077 - Ignoring since its part of stream setup
     ### XEP-0079
     [None, None, "http://jabber.org/protocol/amp#errors",
@@ -144,4 +148,5 @@ mappings = \
      "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
     [psEvent("http://jabber.org/protocol/geoloc"), "geoloc",
      "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
+    ### XEP-0082 - Ignoring since it has no schema itself.
 ]

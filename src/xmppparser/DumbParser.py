@@ -157,19 +157,7 @@ class DumbParser(object):
     def complete(self, text):
         try:
             def recursor(elem, syn = None, target = None):
-                if "xmlns" in elem.parent.attrs:
-                    attr = elem.parent.attrs["xmlns"]
-                    if attr:
-                        xmlns = attr.value().lstrip("'").rstrip("'")
-                        xmlns = xmlns.lstrip('"').rstrip('"')
-                elif "node" in elem.parent.attrs:
-                    attr = elem.parent.attrs["node"]
-                    if attr:
-                        xmlns = attr.value().lstrip("'").rstrip("'")
-                        xmlns = xmlns.lstrip('"').rstrip('"')
-                        xmlns = HList("node", xmlns)
-                else:
-                    xmlns = None
+                xmlns = elem.parent.findMainNS()
                 if not syn:
                     if elem.name in stanzas.keys():
                         syn = stanzas[elem.name]
@@ -209,12 +197,7 @@ class DumbParser(object):
                     if self.last_non_space_c == ">":
                         readline.insert_text("<")
                     return ret
-            xmlns = None
-            if "xmlns" in elem.attrs:
-                attr = elem.attrs["xmlns"]
-                if attr:
-                    xmlns = attr.value().lstrip("'").rstrip("'")
-                    xmlns = xmlns.lstrip('"').rstrip('"')
+            xmlns = elem.findMainNS()
             if self.state == self.STATE_NAME:
                 names = [c.name for c in elem.children]
                 ret = [e for e in syn.nsed(xmlns).children
@@ -254,8 +237,8 @@ class DumbParser(object):
                 nqt = text.lstrip(quote)
                 vallist = None
                 if (len(syn.nsmap) and
-                    (self.cur_attr_name == "xmlns") or
-                    self.cur_attr_name.startswith("xmlns:")):
+                    ((self.cur_attr_name == "xmlns") or
+                     self.cur_attr_name.startswith("xmlns:"))):
                     vallist = syn.nsmap.keys()
                 else:
                     attr = [attr for attr in syn.nsed(xmlns).attrs.values()

@@ -1,0 +1,20 @@
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='jabber:client'
+    xmlns='jabber:client'
+    elementFormDefault='qualified'>
+
+  <xs:element name='error'>
+    <xs:complexType>
+      <xs:sequence xmlns:err='urn:ietf:params:xml:ns:xmpp-stanzas'
+                   xmlns:sfault='http://jabber.org/protocol/soap#fault'>
+        <xs:element ref='sfault:DataEncodingUnknown'/>
+        <xs:element ref='sfault:MustUnderstand'/>
+        <xs:element ref='sfault:Receiver'/>
+        <xs:element ref='sfault:Sender'/>
+        <xs:element ref='sfault:VersionMismatch'/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

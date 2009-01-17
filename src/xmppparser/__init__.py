@@ -184,6 +184,25 @@ class Elem(object):
                 self.attrs[key] = Attr(key, [val])
             return nsed
 
+    def findMainNS(self):
+        ns = None
+        if ":" in self.name:
+            tmp = "xmlns:" + self.name.split(":")[0]
+            if tmp in self.attrs:
+                ns = self.attrs[tmp]
+        elif "xmlns" in self.attrs:
+            attr = self.attrs["xmlns"]
+            if attr:
+                ns = attr.value().lstrip("'").rstrip("'")
+                ns = ns.lstrip('"').rstrip('"')
+        elif "node" in self.attrs:
+            attr = self.attrs["node"]
+            if attr:
+                ns = attr.value().lstrip("'").rstrip("'")
+                ns = ns.lstrip('"').rstrip('"')
+                ns = HList("node", ns)
+        return ns
+
     def isEmpty(self):
         if len(self.nsmap) or not self.default_nsed.isEmpty():
             return False

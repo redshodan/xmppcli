@@ -15,7 +15,7 @@
     </xs:documentation>
   </xs:annotation>
 
- <xs:element name='closed-node' type='empty'/>
+  <xs:element name='closed-node' type='empty'/>
   <xs:element name='configuration-required' type='empty'/>
   <xs:element name='invalid-jid' type='empty'/>
   <xs:element name='invalid-options' type='empty'/>
