@@ -155,4 +155,11 @@ mappings = \
     ### XEP-0083
     [["iq", ["query", "jabber:iq:private"]], "roster", "roster:delimiter",
      "XEP-0083.xsd"],
+    ### XEP-0084
+    [psPublish("urn:xmpp:avatar:data"), "data", "urn:xmpp:avatar:data",
+     "XEP-0084.xsd"],
+    [psPublish("urn:xmpp:avatar:metadata"), "metadata",
+     "urn:xmpp:avatar:metadata", "XEP-0084-metadata.xsd"],
+    [psEvent("urn:xmpp:avatar:metadata"), "metadata",
+     "urn:xmpp:avatar:metadata", "XEP-0084-metadata.xsd"],
 ]
