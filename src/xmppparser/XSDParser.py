@@ -160,12 +160,13 @@ def _recursor(schema, xelem, sparent, ns, pns, is_ref):
         return _parseAttribute(schema, xelem, sparent, pns)
     elif (("ref" in xelem.attrs) or ("type" in xelem.attrs)):
         ref = None
+        rns = None
         if "ref" in xelem.attrs:
             name = xelem.attrs["ref"].value()
-            ref = _findRef(schema, name, sparent)
+            ref, rns = _findRef(schema, name, sparent)
         if ((not ref) and ("type" in xelem.attrs)):
             name = xelem.attrs["type"].value()
-            ref = _findRef(schema, name, sparent)
+            ref, ignore = _findRef(schema, name, sparent)
         if ref and ref.looped:
             sparent.nsed(pns).children.append(ref)
             return ref
@@ -174,8 +175,9 @@ def _recursor(schema, xelem, sparent, ns, pns, is_ref):
                 name = xelem.attrs["name"].value()
             else:
                 name = ref.attrs["name"].value()
-            schild = Elem(name, None, sparent, pns)
-            schild.cdata.extend(_parseRestriction(schema, ref))
+            nsed = NSed(rns, cdata=_parseRestriction(schema, ref),
+                        vtype=_parseType(ref))
+            schild = Elem(name, [nsed], sparent, pns)
             schild.schema = schema
             sparent = schild
         if ref:
@@ -254,7 +256,7 @@ def _parseAttribute(schema, xelem, selem, ns):
     else:
         required = False
     if "ref" in xelem.attrs:
-        ref = _findRef(schema, xelem.attrs["ref"].value(), None)
+        ref, ignore = _findRef(schema, xelem.attrs["ref"].value(), None)
         sattr = Attr(ref.name, ref.values, required, ref.vtype)
     else:
         sattr = Attr(xelem.nsed(ns).attrs["name"].value(),
@@ -289,20 +291,21 @@ def _findRef(schema, name, selem):
             if not pelem:
                 pelem = last_pelem
             if not pelem:
-                return None
+                return None, None
             pelem.looped = True
-            return pelem
+            return pelem, None
         if pelem:
             last_pelem = pelem
     try:
         ns, ename = name.split(":")
-        return nsed_xsd[selem.nses[ns].value()][ename]
+        xmlns = selem.nses[ns].value()
+        return nsed_xsd[xmlns][ename], xmlns
     except Exception, e:
         pass
     if name in base_syntax:
-        return base_syntax[name]
+        return base_syntax[name], None
     for xchild in schema.children:
         if (("name" in xchild.attrs) and
             (xchild.attrs["name"].value() == name)):
-            return xchild
-    return None
+            return xchild, None
+    return None, None

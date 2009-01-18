@@ -91,13 +91,6 @@
   </xs:element>
 
   <xs:simpleType name='empty'>
-    <xs:attribute name='xmlns' use='required'>
-      <xs:simpleType>
-        <xs:restriction base='xs:string'>
-          <xs:enumeration value='http://jabber.org/protocol/pubsub#errors'/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
     <xs:restriction base='xs:string'>
       <xs:enumeration value=''/>
     </xs:restriction>

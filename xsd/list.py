@@ -140,7 +140,8 @@ mappings = \
      "soap-envelope.xsd"],
     [None, None, "http://jabber.org/protocol/soap#fault", "XEP-0072.xsd"],
     [["iq"], "error", "jabber:client", "XEP-0072-error-elem.xsd"],
-    ### XEP-0077 - Ignoring since its part of stream setup
+    ### XEP-0077 - Ignoring stream feature
+    [["iq"], "query", "jabber:iq:register", "XEP-0077.xsd"],
     ### XEP-0079
     [None, None, "http://jabber.org/protocol/amp#errors",
      "XEP-0079-errors.xsd"],

@@ -15,13 +15,6 @@
 
   <xs:element name='failed-rules'>
     <xs:complexType>
-      <xs:attribute name='xmlns' use='required'>
-        <xs:simpleType>
-          <xs:restriction base='xs:string'>
-            <xs:enumeration value='http://jabber.org/protocol/amp#errors'/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
       <xs:sequence>
         <xs:element ref='rule' minOccurs='1' maxOccurs='unbounded'/>
       </xs:sequence>
@@ -30,13 +23,6 @@
 
   <xs:element name='rule'>
     <xs:complexType>
-      <xs:attribute name='xmlns' use='required'>
-        <xs:simpleType>
-          <xs:restriction base='xs:string'>
-            <xs:enumeration value='http://jabber.org/protocol/amp#errors'/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
       <xs:attribute name='action' use='required' type='xs:NCName'/>
       <xs:attribute name='condition' use='required' type='xs:NCName'/>
       <xs:attribute name='value' use='required' type='xs:string'/>

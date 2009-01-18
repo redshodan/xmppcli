@@ -39,13 +39,6 @@
   <xs:element name='no-valid-streams' type='empty'/>
 
   <xs:simpleType name='empty'>
-    <xs:attribute name='xmlns' use='required'>
-      <xs:simpleType>
-        <xs:restriction base='xs:string'>
-          <xs:enumeration value='http://jabber.org/protocol/si'/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
     <xs:restriction base='xs:string'>
       <xs:enumeration value=''/>
     </xs:restriction>

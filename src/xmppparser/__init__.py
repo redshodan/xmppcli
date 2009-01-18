@@ -181,7 +181,7 @@ class Elem(object):
             if key in self.attrs:
                 self.attrs[key].values.append(val)
             else:
-                self.attrs[key] = Attr(key, [val])
+                self.attrs[key] = Attr(key, [val], True)
             return nsed
 
     def findMainNS(self):
@@ -254,7 +254,7 @@ class NSed(object):
             else:
                 key = "xmlns"
                 val = self.ns
-            self.attrs[key] = Attr(key, [val])
+            self.attrs[key] = Attr(key, [val], True)
         if cdata:
             self.cdata = cdata
         else:
