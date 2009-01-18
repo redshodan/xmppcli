@@ -198,4 +198,6 @@ mappings = \
      "http://jabber.org/protocol/tune", "XEP-0118.xsd"],
     [psEvent("http://jabber.org/protocol/tune"), "tune",
      "http://jabber.org/protocol/tune", "XEP-0118.xsd"],
+    ### XEP-0122 - Merged into the xsd for XEP-0004
+    ### XEP-0124 - Ignoring stream level protocol
 ]
