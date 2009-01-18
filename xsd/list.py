@@ -201,9 +201,9 @@ mappings = \
      "http://jabber.org/protocol/tune", "XEP-0118.xsd"],
     ### XEP-0122 - Merged into the xsd for XEP-0004
     ### XEP-0124 - Ignoring stream level protocol
-    ### XEP-0126 - Ignoring since it has no schema
+    ### XEP-0126 - Informational
     ### XEP-0127 - Skipping... just cause
-    ### XEP-0127 - Ignoring since it is informational
+    ### XEP-0128 - Informational
     ### XEP-0130
     [["iq"], "query", "http://jabber.org/protocol/waitinglist", "XEP-0130.xsd"],
     [["message"], "waitlist", "http://jabber.org/protocol/waitinglist",
@@ -215,4 +215,10 @@ mappings = \
     [["presence"], "headers", "http://jabber.org/protocol/shim",
      "XEP-0131.xsd"],
     ### XEP-0132 - chuckled at, but ignored.
+    ### XEP-0133 - TBD: create a form profile for this
+    ### XEP-0134 - Informational
+    ### XEP-0136
+    [["iq"], ["auto", "chat", "itemremove", "list", "modified", "pref",
+              "retrieve", "remove", "save"],
+     "urn:xmpp:archive", "XEP-0136.xsd"],
 ]
