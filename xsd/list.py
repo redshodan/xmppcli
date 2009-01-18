@@ -235,4 +235,7 @@ mappings = \
     ### XEP-0143 - Informational
     ### XEP-0144
     [["message"], "x", "http://jabber.org/protocol/rosterx", "XEP-0144.xsd"],
+    ### XEP-0145
+    [["iq", ["query", "jabber:iq:private"]], "storage", "storage:rosternotes",
+     "XEP-0145.xsd"],
 ]

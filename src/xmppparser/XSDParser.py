@@ -124,7 +124,7 @@ def generateSyntax(parser, name, ns, sparent, sns):
         _scanNSes(schema, root)
 
         if sns:
-            _recursor(schema, root, sparent, None, sns, False)
+            _recursor(schema, root, sparent, ns, sns, False)
             return
         elif sparent:
             for schild in sparent.children:
