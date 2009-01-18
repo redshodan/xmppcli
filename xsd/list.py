@@ -230,4 +230,6 @@ mappings = \
     [["iq"], ["start", "starting"], "http://jabber.org/protocol/sipub",
      "XEP-0137.xsd"],
     [["message"],"sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
+    ### XEP-0138 - Ignoring stream feature
+    ### XEP-0141 - Merged into the xsd for XEP-0004
 ]
