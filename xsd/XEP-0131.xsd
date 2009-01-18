@@ -134,6 +134,9 @@
                 <xs:enumeration value='Via'/>
                 <xs:enumeration value='Warning'/>
                 <xs:enumeration value='WWW-Authenticate'/>
+                <!-- Added values from XEP-0149 -->
+                <xs:enumeration value='Start'/>
+                <xs:enumeration value='Stop'/>
               </xs:restriction>
             </xs:simpleType>
           </xs:attribute>

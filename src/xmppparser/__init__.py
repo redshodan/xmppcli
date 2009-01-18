@@ -149,10 +149,18 @@ class Elem(object):
     vtype = property(vtype_get, vtype_set)
 
     def nsed(self, ns = None):
+        # Exact match
         try:
             return self.nsmap[ns]
         except KeyError:
             pass
+        # No exact match. If this is a node attribute, then try ignoring the val
+        if isinstance(ns, list) and ns[0] == "node":
+            try:
+                return self.nsmap[HList("node", None)]
+            except KeyError:
+                pass
+        # No match, return the default
         return self.default_nsed
 
     def find(self, name, recurse=False, filter=[], ns=None):
@@ -200,6 +208,8 @@ class Elem(object):
             if attr:
                 ns = attr.value().lstrip("'").rstrip("'")
                 ns = ns.lstrip('"').rstrip('"')
+                if len(ns) == 0:
+                    ns = None
                 ns = HList("node", ns)
         return ns
 
@@ -273,7 +283,7 @@ class NSed(object):
         copy.attrs.update(self.attrs)
         copy.cdata.extend(self.cdata)
         for child in self.children:
-            copy.children.append(child.deepCopy())
+            copy.children.append(child.deepCopy(parent))
         copy.vtype = self.vtype
         copy.parent = parent
         return copy

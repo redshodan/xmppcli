@@ -225,8 +225,8 @@ mappings = \
     [["iq", ["pubsub", "http://jabber.org/protocol/pubsub"], "publish"],
      "sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
     [["message", ["event", "http://jabber.org/protocol/pubsub#event"],
-      "items", "item"], "sipub", "http://jabber.org/protocol/sipub",
-     "XEP-0137.xsd"],
+      ["items", HList("node", None)], "item"],
+     "sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
     [["iq"], ["start", "starting"], "http://jabber.org/protocol/sipub",
      "XEP-0137.xsd"],
     [["message"],"sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
@@ -238,4 +238,14 @@ mappings = \
     ### XEP-0145
     [["iq", ["query", "jabber:iq:private"]], "storage", "storage:rosternotes",
      "XEP-0145.xsd"],
+    ### XEP-0146 - TBD: create a form profile for this
+    ### XEP-0147 - Informational
+    ### XEP-0148 - chuckled at, but ignored.
+    ### XEP-0149 - Merged into XEP-0131
+    ### XEP-0152
+    [psPublish("urn:xmpp:reach:0"), "reach", "urn:xmpp:reach:0",
+     "XEP-0152.xsd"],
+    [psEvent("urn:xmpp:reach:0"), "reach", "urn:xmpp:reach:0",
+     "XEP-0152.xsd"],
+    [["presence"], "reach", "urn:xmpp:reach:0", "XEP-0152.xsd"],
 ]
