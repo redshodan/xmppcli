@@ -179,4 +179,10 @@ mappings = \
      "http://jabber.org/protocol/si/profile/file-transfer", "XEP-0096.xsd"],
     ### XEP-0100
     [["iq"], "query", "jabber:iq:gateway", "XEP-0100.xsd"],
+    ### XEP-0106 - Ignoring since it has no schema itself.
+    [psPublish("http://jabber.org/protocol/mood"), "mood",
+     "http://jabber.org/protocol/mood", "XEP-0107.xsd"],
+    [psEvent("http://jabber.org/protocol/mood"), "mood",
+     "http://jabber.org/protocol/mood", "XEP-0107.xsd"],
+    [["message"], "mood", "http://jabber.org/protocol/mood", "XEP-0107.xsd"],
 ]
