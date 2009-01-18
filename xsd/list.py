@@ -152,7 +152,7 @@ mappings = \
      "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
     [psEvent("http://jabber.org/protocol/geoloc"), "geoloc",
      "http://jabber.org/protocol/geoloc", "XEP-0080.xsd"],
-    ### XEP-0082 - Ignoring since it has no schema itself.
+    ### XEP-0082 - Ignoring since it has no schema
     ### XEP-0083
     [["iq", ["query", "jabber:iq:private"]], "roster", "roster:delimiter",
      "XEP-0083.xsd"],
@@ -179,7 +179,7 @@ mappings = \
      "http://jabber.org/protocol/si/profile/file-transfer", "XEP-0096.xsd"],
     ### XEP-0100
     [["iq"], "query", "jabber:iq:gateway", "XEP-0100.xsd"],
-    ### XEP-0106 - Ignoring since it has no schema itself.
+    ### XEP-0106 - Ignoring since it has no schema
     ### XEP-0107
     [psPublish("http://jabber.org/protocol/mood"), "mood",
      "http://jabber.org/protocol/mood", "XEP-0107.xsd"],
@@ -200,4 +200,11 @@ mappings = \
      "http://jabber.org/protocol/tune", "XEP-0118.xsd"],
     ### XEP-0122 - Merged into the xsd for XEP-0004
     ### XEP-0124 - Ignoring stream level protocol
+    ### XEP-0126 - Ignoring since it has no schema
+    ### XEP-0127 - Skipping... just cause
+    ### XEP-0127 - Ignoring since it is informational
+    ### XEP-0130
+    [["iq"], "query", "http://jabber.org/protocol/waitinglist", "XEP-0130.xsd"],
+    [["message"], "waitlist", "http://jabber.org/protocol/waitinglist",
+     "XEP-0130.xsd"],
 ]
