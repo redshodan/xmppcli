@@ -177,4 +177,6 @@ mappings = \
     [["iq"], "si", "http://jabber.org/protocol/si", "XEP-0096-profile.xsd"],
     [["iq", ["si", "http://jabber.org/protocol/si"]], "file",
      "http://jabber.org/protocol/si/profile/file-transfer", "XEP-0096.xsd"],
+    ### XEP-0100
+    [["iq"], "query", "jabber:iq:gateway", "XEP-0100.xsd"],
 ]
