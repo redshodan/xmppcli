@@ -194,4 +194,8 @@ mappings = \
     ### XEP-0114 - Ignoring since its outside of jabber:client
     ### XEP-0115
     [["presence"], "c", "http://jabber.org/protocol/caps", "XEP-0115.xsd"],
+    [psPublish("http://jabber.org/protocol/tune"), "tune",
+     "http://jabber.org/protocol/tune", "XEP-0118.xsd"],
+    [psEvent("http://jabber.org/protocol/tune"), "tune",
+     "http://jabber.org/protocol/tune", "XEP-0118.xsd"],
 ]
