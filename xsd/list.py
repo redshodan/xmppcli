@@ -207,4 +207,10 @@ mappings = \
     [["iq"], "query", "http://jabber.org/protocol/waitinglist", "XEP-0130.xsd"],
     [["message"], "waitlist", "http://jabber.org/protocol/waitinglist",
      "XEP-0130.xsd"],
+    ### XEP-0131
+    [["iq", "query"], "headers", "http://jabber.org/protocol/shim",
+     "XEP-0131.xsd"],
+    [["message"], "headers", "http://jabber.org/protocol/shim", "XEP-0131.xsd"],
+    [["presence"], "headers", "http://jabber.org/protocol/shim",
+     "XEP-0131.xsd"],
 ]
