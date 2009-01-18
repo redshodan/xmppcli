@@ -232,4 +232,7 @@ mappings = \
     [["message"],"sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
     ### XEP-0138 - Ignoring stream feature
     ### XEP-0141 - Merged into the xsd for XEP-0004
+    ### XEP-0143 - Informational
+    ### XEP-0144
+    [["message"], "x", "http://jabber.org/protocol/rosterx", "XEP-0144.xsd"],
 ]
