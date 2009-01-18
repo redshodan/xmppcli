@@ -168,6 +168,8 @@ mappings = \
      "http://jabber.org/protocol/chatstates", "XEP-0085.xsd"],
     ### XEP-0092
     [["iq"], "query", "jabber:iq:version", "XEP-0092.xsd"],
+    ### XEP-0094
+    [["iq"], "query", "jabber:iq:agents", "XEP-0094.xsd"],
     ### XEP-0095
     [["iq"], "si", "http://jabber.org/protocol/si", "XEP-0095.xsd"],
     [["iq"], "error", "jabber:client", "XEP-0095-error-elem.xsd"],
