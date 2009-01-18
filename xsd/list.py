@@ -191,4 +191,7 @@ mappings = \
      "http://jabber.org/protocol/activity", "XEP-0108.xsd"],
     [psEvent("http://jabber.org/protocol/activity"), "activity",
      "http://jabber.org/protocol/activity", "XEP-0108.xsd"],
+    ### XEP-0114 - Ignoring since its outside of jabber:client
+    ### XEP-0115
+    [["presence"], "c", "http://jabber.org/protocol/caps", "XEP-0115.xsd"],
 ]
