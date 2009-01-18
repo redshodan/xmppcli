@@ -221,4 +221,13 @@ mappings = \
     [["iq"], ["auto", "chat", "itemremove", "list", "modified", "pref",
               "retrieve", "remove", "save"],
      "urn:xmpp:archive", "XEP-0136.xsd"],
+    ### XEP-0137
+    [["iq", ["pubsub", "http://jabber.org/protocol/pubsub"], "publish"],
+     "sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
+    [["message", ["event", "http://jabber.org/protocol/pubsub#event"],
+      "items", "item"], "sipub", "http://jabber.org/protocol/sipub",
+     "XEP-0137.xsd"],
+    [["iq"], ["start", "starting"], "http://jabber.org/protocol/sipub",
+     "XEP-0137.xsd"],
+    [["message"],"sipub", "http://jabber.org/protocol/sipub", "XEP-0137.xsd"],
 ]
