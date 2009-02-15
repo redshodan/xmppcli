@@ -101,7 +101,8 @@ mappings = \
      "XEP-0048.xsd"],
     ### XEP-0050
     [["iq"], "command", "http://jabber.org/protocol/commands", "XEP-0050.xsd"],
-    ### XEP-0054 - TBD: Need to convert DTD to XSD
+    ### XEP-0054
+    [["iq"], "vCard", "vcard-temp", "XEP-0054.xsd"],
     ### XEP-0055
     [["iq"], "query", "jabber:iq:search", "XEP-0055.xsd"],
     ### XEP-0059
