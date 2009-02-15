@@ -249,4 +249,6 @@ mappings = \
     [psEvent("urn:xmpp:reach:0"), "reach", "urn:xmpp:reach:0",
      "XEP-0152.xsd"],
     [["presence"], "reach", "urn:xmpp:reach:0", "XEP-0152.xsd"],
+    ### XEP-0153
+    [["presence"], "x", "vcard-temp:x:update", "XEP-0153.xsd"],
 ]
