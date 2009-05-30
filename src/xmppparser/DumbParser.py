@@ -16,7 +16,6 @@
 
 import re, readline
 from . import Attr, Elem, NSed, HList
-from . import stanzas
 from . import logEx
 
 
@@ -36,7 +35,8 @@ class DumbParser(object):
         STATE_CDATA : "cdata"
     }
 
-    def __init__(self, debug = False):
+    def __init__(self, xsdparser, debug = False):
+        self.xsdparser = xsdparser
         self.root = Elem("root")
         self.root.parent = self.root
         self.cur_elem = self.root
@@ -159,8 +159,8 @@ class DumbParser(object):
             def recursor(elem, syn = None, target = None):
                 xmlns = elem.parent.findMainNS()
                 if not syn:
-                    if elem.name in stanzas.keys():
-                        syn = stanzas[elem.name]
+                    if elem.name in self.xsdparser.stanzas.keys():
+                        syn = self.xsdparser.stanzas[elem.name]
                     else:
                         return None, None
                 else:
@@ -189,7 +189,7 @@ class DumbParser(object):
             else:
                 elem, syn = None, None
             if not elem or not syn:
-                ret = [stanza for stanza in stanzas.keys()
+                ret = [stanza for stanza in self.xsdparser.stanzas.keys()
                        if stanza.startswith(text)]
                 if len(ret) == 1:
                     return [ret[0] + " "]

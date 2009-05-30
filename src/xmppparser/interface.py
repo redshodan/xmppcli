@@ -61,12 +61,13 @@ class Interface(cmd.Cmd):
     _iq_args = ["to", "type", "id", "xmlns", "child"]
     _test_args = ["foo"]
 
-    def __init__(self, handler, stream_info, debug=False):
+    def __init__(self, handler, stream_info, xsdparser, debug=False):
         import atexit, sys, termios
         self.__old_termios = termios.tcgetattr(sys.__stdin__.fileno())
         atexit.register(self.cleanup)
 
         cmd.Cmd.__init__(self)
+        self.xsdparser = xsdparser
         self.debug = debug
         self.prompt = ">> "
         self.user_rawinput = True
@@ -138,7 +139,7 @@ class Interface(cmd.Cmd):
     @logEx
     def arg_complete(self, text, line, begidx, endix):
         args = self._white_space.split(line)
-        parser = DumbParser(self.debug)
+        parser = DumbParser(self.xsdparser, self.debug)
         parser.in_attr_name = 1
         parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
         parser.parse(" ".join(args[1:]))
@@ -151,7 +152,7 @@ class Interface(cmd.Cmd):
     def completedefault(self, text, line, begidx, endix):
         if not line.startswith("<"):
             return []
-        parser = DumbParser(self.debug)
+        parser = DumbParser(self.xsdparser, self.debug)
         parser.parse(line)
         return parser.complete(text)
 

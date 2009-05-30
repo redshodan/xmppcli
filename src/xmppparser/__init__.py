@@ -43,8 +43,6 @@ vtypes = \
     VTYPE_CHOICE : "VTYPE_CHOICE",
 }
 
-# Stanza syntax tree
-stanzas = {}
 
 class HList(list):
     def __init__(self, *args):
@@ -332,12 +330,13 @@ class NSed(object):
                 child.doPrint(indent + "  ", ns, doloop=doloop)
 
 def init(home):
-    XSDParser.parseXSDList(home)
+    parser = XSDParser(home)
+    parser.load()
+    return parser
 
 
 from .DumbParser import DumbParser
-XSDParser = None
-import XSDParser
+from XSDParser import XSDParser
 
 from .interface import Interface
 from . import interface
