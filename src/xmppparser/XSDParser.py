@@ -15,7 +15,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import os
+import os, stat
+import cPickle as pickle
 from xmppparser import *
 from .DumbParser import DumbParser
 
@@ -29,12 +30,39 @@ class XSDParser(object):
         self.nsed_xsd = {}
         self.required_ns = ["xmppparser:base", "jabber:client"]
         self._recursor_stack = []
-    
+        self.pickled_fname = os.path.join(self.home, "xsd", "stanzas.pkl")
+        self.list_fname = os.path.join(self.home, "xsd", "list.py")
+
+    def checkPickled(self, mappings):
+        ptime = None
+        try:
+            info = os.stat(self.pickled_fname)
+            if not stat.S_ISREG(info[stat.ST_MODE]):
+                return False
+            ptime = info[stat.ST_MTIME]
+        except:
+            return False
+        info = os.stat(self.list_fname)
+        if info[stat.ST_MTIME] > ptime:
+            return False
+        for mapping in mappings:
+            filename = os.path.join(self.home, "xsd", mapping[3])
+            info = os.stat(filename)
+            if info[stat.ST_MTIME] > ptime:
+                return False
+        return True
+
     def load(self):
         if self.xsdlist:
             self.xsdlist.extend(self.required_ns)
         globs = {}
-        execfile(os.path.join(self.home, "xsd", "list.py"), globs)
+        execfile(self.list_fname, globs)
+        if self.checkPickled(globs["mappings"]):
+            pickled = open(self.pickled_fname, "rb")
+            self.stanzas = pickle.load(pickled)
+            pickled.close()
+            return
+        print "Loading XSD's for the first time, this may take a little time..."
         for mapping in globs["mappings"]:
             rootname = mapping[0]
             nodename = mapping[1]
@@ -81,7 +109,12 @@ class XSDParser(object):
                 nodename = [nodename]
             for node in nodename:
                 self.generateSyntax(parser, node, ns, root, rns)
-    
+
+        print "Saving xsd information"
+        pickled = open(self.pickled_fname, "wb")
+        pickle.dump(self.stanzas, pickled)
+        pickled.close()
+
     def parse(self, filename):
         parser = DumbParser(self)
         fp = file(filename)
