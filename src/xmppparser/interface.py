@@ -59,7 +59,7 @@ class Interface(cmd.Cmd):
     _message_args = ["to", "type", "subject", "body", "thread"]
     _presence_args = ["to", "type", "priority", "show", "status"]
     _iq_args = ["to", "type", "id", "xmlns", "child"]
-    _test_args = ["foo"]
+    _roster_args = ["all"]
 
     def __init__(self, handler, stream_info, xsdparser, debug=False):
         import atexit, sys, termios
@@ -144,8 +144,6 @@ class Interface(cmd.Cmd):
         parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
         parser.parse(" ".join(args[1:]))
         ret = parser.complete(text)
-        print
-        print "arg_complete returning:",  ret
         return ret
 
     @logEx
@@ -222,12 +220,32 @@ class Interface(cmd.Cmd):
 
     @logEx
     def do_roster(self, arg):
-        # argmap = self.collate_args(arg, self._test_args,
-        #                            self.help_test)
-        # if argmap:
+        argmap = self.collate_args(arg, self._roster_args,
+                                   self.help_roster)
+        if not argmap:
+            return
+        all = argmap["all"]
         print "Roster:"
-        for key, val in self.roster.iteritems():
-            print key, val
+        for jid, entry in self.roster.iteritems():
+            if all:
+                print "%s:" % jid
+                for res, rentry in entry["resources"].iteritems():
+                    pri = "0"
+                    if "priority" in rentry and rentry["priority"]:
+                        pri = rentry["priority"]
+                    print "   %s(%s)" % (res, pri),
+                    if (("status" in rentry) and rentry["status"] and
+                        (rentry["status"] != "Available")):
+                        print " status(%s)" % rentry["status"],
+                    if "show" in rentry and rentry["show"]:
+                        print " show(%s)" % rentry["show"],
+                    print
+            else:
+                num = len(entry["resources"])
+                if num > 1:
+                    print "%s(%d)" % (jid, num)
+                else:
+                    print "%s" % jid
 
     @logEx
     def complete_roster(self, text, line, begidx, endix):
