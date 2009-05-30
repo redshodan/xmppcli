@@ -15,27 +15,26 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-def logEx(e):
-    import traceback
-    print
-    print traceback.print_exc()
-    print e
-
-
-def init(home):
-    parser.init(home)
+import sys, xmpp
+import xmppparser
+from xmppparser import Interface
+from .XMPPClient import XMPPClient
 
 
 def run():
-    import thread
-    client = XMPPClient()
-    ui = Interface(client, client.stream_info)
+    import logging
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(levelname)-8s %(message)s')
+    xmppparser.init("../../xmppparser/trunk")
+    print "Connecting..."
+    jid = xmpp.JID(sys.argv[1])
+    client = XMPPClient(jid, sys.argv[2])
+    client.connect()
+    print "connected"
+    stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
+                   "resource" : jid.getResource(), "jid" : str(jid)}
+    ui = Interface(client, stream_info)
     client.setUI(ui)
-    thread.start_new_thread(XMPPClient.run, (client,))
+    client.run()
+    ui.setRoster(client.conn.Roster)
     ui.run()
-
-
-from .parser import Attr, Elem, DumbParser
-from .interface import Interface
-#from .client import XMPPClient
-from . import parser, interface
