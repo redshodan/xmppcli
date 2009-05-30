@@ -25,7 +25,6 @@ def run():
     import logging
     logging.basicConfig(level=logging.DEBUG,
                         format='%(levelname)-8s %(message)s')
-    parser = xmppparser.init("../../xmppparser/trunk")
     print "Connecting..."
     jid = xmpp.JID(sys.argv[1])
     client = XMPPClient(jid, sys.argv[2])
@@ -33,7 +32,7 @@ def run():
     print "connected"
     stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
                    "resource" : jid.getResource(), "jid" : str(jid)}
-    ui = Interface(client, stream_info, parser)
+    ui = Interface(client, stream_info, "../../xmppparser/trunk")
     client.setUI(ui)
     client.run()
     ui.setRoster(client.conn.Roster)
