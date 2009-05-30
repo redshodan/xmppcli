@@ -15,8 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re, readline
-from . import Attr, Elem, NSed, HList
-from . import logEx
+from . import *
 
 
 class DumbParser(object):
@@ -224,9 +223,15 @@ class DumbParser(object):
                 if len(ret) == 0:
                     return [">"]
                 elif text in ret:
-                    return [text + "='"]
+                    if syn.nsed(xmlns).attrs[text].vtype == VTYPE_FLAG:
+                        return [text + " "]
+                    else:
+                        return [text + "='"]
                 elif len(ret) == 1:
-                    return [ret[0] + "='"]
+                    if syn.nsed(xmlns).attrs[ret[0]].vtype == VTYPE_FLAG:
+                        return [ret[0] + " "]
+                    else:
+                        return [ret[0] + "='"]
                 else:
                     return ret
             elif self.state == self.STATE_ATTR_VAL:

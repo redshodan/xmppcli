@@ -30,8 +30,8 @@ class XSDParser(object):
         self.nsed_xsd = {}
         self.required_ns = ["xmppparser:base", "jabber:client"]
         self._recursor_stack = []
-        self.pickled_fname = os.path.join(self.home, "xsd", "stanzas.pkl")
-        self.list_fname = os.path.join(self.home, "xsd", "list.py")
+        self.pickled_fname = os.path.join(self.home, "schema.pkl")
+        self.list_fname = os.path.join(self.home, "list.py")
 
     def checkPickled(self, mappings):
         ptime = None
@@ -46,7 +46,7 @@ class XSDParser(object):
         if info[stat.ST_MTIME] > ptime:
             return False
         for mapping in mappings:
-            filename = os.path.join(self.home, "xsd", mapping[3])
+            filename = os.path.join(self.home, mapping[3])
             info = os.stat(filename)
             if info[stat.ST_MTIME] > ptime:
                 return False
@@ -62,14 +62,15 @@ class XSDParser(object):
             self.stanzas = pickle.load(pickled)
             pickled.close()
             return
-        print "Loading XSD's for the first time, this may take a little time..."
+        print "Loading schema from '%s' for the first time, this may take a " \
+              "little time..." % self.home
         for mapping in globs["mappings"]:
             rootname = mapping[0]
             nodename = mapping[1]
             ns = mapping[2]
             if self.xsdlist and mapping[2] not in self.xsdlist:
                 continue
-            filename = os.path.join(self.home, "xsd", mapping[3])
+            filename = os.path.join(self.home, mapping[3])
             parser = self.parse(filename)
             root = None
             nsed = None
@@ -110,7 +111,7 @@ class XSDParser(object):
             for node in nodename:
                 self.generateSyntax(parser, node, ns, root, rns)
 
-        print "Saving xsd information"
+        print "Saving schema information"
         pickled = open(self.pickled_fname, "wb")
         pickle.dump(self.stanzas, pickled)
         pickled.close()
@@ -318,6 +319,8 @@ class XSDParser(object):
             return VTYPE_FLOAT
         elif xtype in ["xs:boolean"]:
             return VTYPE_BOOL
+        elif xtype in ["xs:flag"]:
+            return VTYPE_FLAG
         else:
             return VTYPE_NONE
     

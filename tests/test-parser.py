@@ -21,8 +21,6 @@ sys.path.append("./src")
 import xmppparser
 from xmppparser import Interface
 
-parser = xmppparser.init(".")
-
 class Handler:
     def handleXML(self, xml):
         print "handleXML:", xml
@@ -31,5 +29,5 @@ if len(sys.argv) > 1:
     debug = True
 else:
     debug = False
-ui = Interface(Handler(), {"hostname" : "foo.com"}, parser, debug)
+ui = Interface(Handler(), {"hostname" : "foo.com"}, ".", debug)
 ui.run()

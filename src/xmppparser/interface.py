@@ -14,7 +14,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import cmd, re, readline
+import os, cmd, re, readline
 from xmppparser import *
 
 
@@ -61,13 +61,15 @@ class Interface(cmd.Cmd):
     _iq_args = ["to", "type", "id", "xmlns", "child"]
     _roster_args = ["all"]
 
-    def __init__(self, handler, stream_info, xsdparser, debug=False):
+    def __init__(self, handler, stream_info, home, debug=False):
         import atexit, sys, termios
         self.__old_termios = termios.tcgetattr(sys.__stdin__.fileno())
         atexit.register(self.cleanup)
 
         cmd.Cmd.__init__(self)
-        self.xsdparser = xsdparser
+        self.home = home
+        self.xsdparser = load(os.path.join(self.home, "xsd"))
+        self.cmdparser = load(os.path.join(self.home, "cmd"))
         self.debug = debug
         self.prompt = ">> "
         self.user_rawinput = True
@@ -139,8 +141,8 @@ class Interface(cmd.Cmd):
     @logEx
     def arg_complete(self, text, line, begidx, endix):
         args = self._white_space.split(line)
-        parser = DumbParser(self.xsdparser, self.debug)
-        parser.in_attr_name = 1
+        parser = DumbParser(self.cmdparser, self.debug)
+        parser.state = parser.STATE_ATTR_NAME
         parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
         parser.parse(" ".join(args[1:]))
         ret = parser.complete(text)

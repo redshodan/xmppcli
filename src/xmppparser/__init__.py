@@ -31,7 +31,7 @@ def logEx(func):
 
 
 (VTYPE_NONE, VTYPE_STR, VTYPE_INT, VTYPE_UINT, VTYPE_FLOAT,
- VTYPE_BOOL, VTYPE_CHOICE) = range(7)
+ VTYPE_BOOL, VTYPE_CHOICE, VTYPE_FLAG) = range(8)
 vtypes = \
 {
     VTYPE_NONE : "VTYPE_NONE",
@@ -41,6 +41,7 @@ vtypes = \
     VTYPE_FLOAT : "VTYPE_FLOAT",
     VTYPE_BOOL : "VTYPE_BOOL",
     VTYPE_CHOICE : "VTYPE_CHOICE",
+    VTYPE_FLAG : "VTYPE_FLAG",
 }
 
 
@@ -329,7 +330,7 @@ class NSed(object):
             for child in self.children:
                 child.doPrint(indent + "  ", ns, doloop=doloop)
 
-def init(home):
+def load(home):
     parser = XSDParser(home)
     parser.load()
     return parser

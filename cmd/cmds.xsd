@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='jabber:client'
+    xmlns='jabber:client'
+    elementFormDefault='qualified'>
+
+  <xs:element name='roster'>
+     <xs:complexType>
+       <xs:attribute name='all' use='optional' type='xs:flag'/>
+     </xs:complexType>
+  </xs:element>
+
+</xs:schema>

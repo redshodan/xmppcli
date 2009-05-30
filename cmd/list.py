@@ -14,15 +14,20 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys
+###
+### Mapping of xsd into complete syntax hierarchy. Order is important. The
+### most used elements MUST be before ones that depend upon them.
+###
+### [root_name, node_name, node_ns, file_name, mapped-to-ns]
+###
 
-sys.path.append("./src")
+from xmppparser import HList
 
-from xmppparser import XSDParser
-import xmppparser
 
-parser = XSDParser("./xsd", sys.argv[1:])
-parser.load()
+mappings = \
+[
+    ### Basic xsd types
+    [None, "xml:lang", "xmppparser:base", "xmppparser-base.xsd"],
 
-for stanza in parser.stanzas.values():
-    stanza.doPrint()
+    [None, "roster", "jabber:client", "cmds.xsd"],
+]

@@ -21,7 +21,7 @@ sys.path.append("./src")
 from xmppparser import XSDParser
 import xmppparser
 
-parser = XSDParser("./xsd", sys.argv[1:])
+parser = XSDParser("./cmd", sys.argv[1:])
 parser.load()
 
 for stanza in parser.stanzas.values():

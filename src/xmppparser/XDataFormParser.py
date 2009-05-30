@@ -14,15 +14,5 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys
 
-sys.path.append("./src")
-
-from xmppparser import XSDParser
-import xmppparser
-
-parser = XSDParser("./xsd", sys.argv[1:])
-parser.load()
-
-for stanza in parser.stanzas.values():
-    stanza.doPrint()
+from xmppparser import *
