@@ -216,7 +216,7 @@ mappings = \
     [["presence"], "headers", "http://jabber.org/protocol/shim",
      "XEP-0131.xsd"],
     ### XEP-0132 - chuckled at, but ignored.
-    ### XEP-0133 - TBD: create a form profile for this
+    ### XEP-0133 - TBD: create a form profile
     ### XEP-0134 - Informational
     ### XEP-0136
     [["iq"], ["auto", "chat", "itemremove", "list", "modified", "pref",
@@ -239,7 +239,7 @@ mappings = \
     ### XEP-0145
     [["iq", ["query", "jabber:iq:private"]], "storage", "storage:rosternotes",
      "XEP-0145.xsd"],
-    ### XEP-0146 - TBD: create a form profile for this
+    ### XEP-0146 - TBD: create a form profile
     ### XEP-0147 - Informational
     ### XEP-0148 - chuckled at, but ignored.
     ### XEP-0149 - Merged into XEP-0131
@@ -251,4 +251,9 @@ mappings = \
     [["presence"], "reach", "urn:xmpp:reach:0", "XEP-0152.xsd"],
     ### XEP-0153
     [["presence"], "x", "vcard-temp:x:update", "XEP-0153.xsd"],
+    ### XEP-0154 - TBD: create a form profile
+    ### XEP-0155 - TBD: create a form profile
+    ### XEP-0156 - Ignoring stream related
+    ### XEP-0157 - TBD: create a form profile
+    ### XEP-0158 - TBD: create a form profile
 ]

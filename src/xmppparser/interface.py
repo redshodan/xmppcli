@@ -59,6 +59,7 @@ class Interface(cmd.Cmd):
     _message_args = ["to", "type", "subject", "body", "thread"]
     _presence_args = ["to", "type", "priority", "show", "status"]
     _iq_args = ["to", "type", "id", "xmlns", "child"]
+    _test_args = ["foo"]
 
     def __init__(self, handler, stream_info, debug=False):
         import atexit, sys, termios
@@ -81,18 +82,34 @@ class Interface(cmd.Cmd):
         delims = delims.replace('-', "")
         delims = delims.replace('#', "")
         readline.set_completer_delims(delims)
+        self.roster = {}
 
     def cleanup(self):
         import termios, sys
         termios.tcsetattr(sys.__stdin__.fileno(), termios.TCSANOW,
                           self.__old_termios)
 
-    def makeTo(self, to):
-        if "@" not in to:
-            return to + "@" + self.stream_info["hostname"]
-        else:
-            return to
+    def setRoster(self, roster):
+        self.roster = roster
 
+    @logEx
+    def makeFrom(self):
+        return self.stream_info["jid"]
+
+    @logEx
+    def makeTo(self, to):
+        jids = self.roster.keys()
+        jids.sort()
+        for jid in jids:
+            if jid.startswith(to):
+                return jid
+        else:
+            if "@" not in to:
+                return to + "@" + self.stream_info["hostname"]
+            else:
+                return to
+
+    @logEx
     def collate_args(self, arg, arg_names, help_func):
         args = self._white_space.split(arg)
         if not len(args):
@@ -118,34 +135,34 @@ class Interface(cmd.Cmd):
             argmap[key] = ordered[index]
         return argmap
 
+    @logEx
     def arg_complete(self, text, line, begidx, endix):
-        try:
-            args = self._white_space.split(line)
-            parser = DumbParser(self.debug)
-            parser.in_attr_name = 1
-            parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
-            parser.parse(" ".join(args[1:]))
-            return parser.complete(text)
-        except Exception, e:
-            logEx(e)
+        args = self._white_space.split(line)
+        parser = DumbParser(self.debug)
+        parser.in_attr_name = 1
+        parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
+        parser.parse(" ".join(args[1:]))
+        ret = parser.complete(text)
+        print
+        print "arg_complete returning:",  ret
+        return ret
 
+    @logEx
     def completedefault(self, text, line, begidx, endix):
-        try:
-            if not line.startswith("<"):
-                return []
-            parser = DumbParser(self.debug)
-            parser.parse(line)
-            return parser.complete(text)
-        except Exception, e:
-            logEx(e)
-        return []
+        if not line.startswith("<"):
+            return []
+        parser = DumbParser(self.debug)
+        parser.parse(line)
+        return parser.complete(text)
 
+    @logEx
     def default(self, line):
         if line == "EOF":
             print
             return True
-        self.handler.handleUIXML(line)
+        self.handler.handleXML(line)
 
+    @logEx
     def emptyline(self):
         pass
 
@@ -176,17 +193,41 @@ class Interface(cmd.Cmd):
     ### Command functions
     ###
 
+    @logEx
     def help_help(self):
         self.do_help()
 
+    ### presence
+    @logEx
     def help_presence(self):
         print "Usage: presence [to] [type] [priority] [show] [status]"
 
+    @logEx
     def do_presence(self, arg):
         argmap = self.collate_args(arg, self._presence_args,
                                    self.help_presence)
         if argmap:
-            self.handler.handleUIPresence(argmap)
+            print "PRESENCE:", argmap
+            #self.handler.handleUIPresence(argmap)
 
+    @logEx
     def complete_presence(self, text, line, begidx, endix):
+        return self.arg_complete(text, line, begidx, endix)
+
+    ### roster
+    @logEx
+    def help_roster(self):
+        print "Usage: roster"
+
+    @logEx
+    def do_roster(self, arg):
+        # argmap = self.collate_args(arg, self._test_args,
+        #                            self.help_test)
+        # if argmap:
+        print "Roster:"
+        for key, val in self.roster.iteritems():
+            print key, val
+
+    @logEx
+    def complete_roster(self, text, line, begidx, endix):
         return self.arg_complete(text, line, begidx, endix)

@@ -18,11 +18,16 @@
 _debug = False
 
 
-def logEx(e):
-    import traceback
-    print
-    print traceback.print_exc()
-    print e
+def logEx(func):
+    def logExWrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception, e:
+            import traceback
+            print
+            print traceback.print_exc()
+            print e
+    return logExWrapper
 
 
 (VTYPE_NONE, VTYPE_STR, VTYPE_INT, VTYPE_UINT, VTYPE_FLOAT,
