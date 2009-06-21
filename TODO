@@ -1,4 +1,0 @@
-XSDParser:
-- Follow custom types for elements/attrs. XEP 0009 depends on this.
-- make Elem.multi an optional syntax object that XSDParser creates
-- chain ns's down the tree. store named nses.
