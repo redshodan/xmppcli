@@ -29,5 +29,10 @@ mappings = \
     ### Basic xsd types
     [None, "xml:lang", "xmppparser:base", "xmppparser-base.xsd"],
 
+    [None, "presence", "jabber:client", "cmds.xsd"],
+    [None, "subscribe", "jabber:client", "cmds.xsd"],
+
+    # Roster
     [None, "roster", "jabber:client", "cmds.xsd"],
+
 ]

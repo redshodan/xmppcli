@@ -29,6 +29,7 @@
                       type='xs:NMTOKEN'
                       use='optional'/>
         <xs:attribute name='to'
+                      completer='rosterTo'
                       type='xs:string'
                       use='optional'/>
         <xs:attribute name='type' use='optional' default='normal'>
@@ -89,6 +90,7 @@
                     type='xs:NMTOKEN'
                     use='optional'/>
       <xs:attribute name='to'
+                    completer='rosterTo'
                     type='xs:string'
                     use='optional'/>
       <xs:attribute name='type' use='optional'>
@@ -148,6 +150,7 @@
                     type='xs:NMTOKEN'
                     use='required'/>
       <xs:attribute name='to'
+                    completer='rosterTo'
                     type='xs:string'
                     use='optional'/>
       <xs:attribute name='type' use='required'>

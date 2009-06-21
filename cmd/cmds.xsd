@@ -6,6 +6,25 @@
     xmlns='jabber:client'
     elementFormDefault='qualified'>
 
+  <!-- Presence -->
+  <xs:element name='presence'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+       <xs:attribute name='type' use='optional' type='xs:string'/>
+       <xs:attribute name='priority' use='optional' type='xs:string'/>
+       <xs:attribute name='show' use='optional' type='xs:string'/>
+       <xs:attribute name='status' use='optional' type='xs:string'/>
+     </xs:complexType>
+  </xs:element>
+
+  <xs:element name='subscribe'>
+     <xs:complexType>
+       <xs:attribute name='to' use='required' type='xs:string'/>
+     </xs:complexType>
+  </xs:element>
+
+  <!-- Roster -->
   <xs:element name='roster'>
      <xs:complexType>
        <xs:attribute name='all' use='optional' type='xs:flag'/>

@@ -96,23 +96,6 @@ class Interface(cmd.Cmd):
         self.roster = roster
 
     @logEx
-    def makeFrom(self):
-        return self.stream_info["jid"]
-
-    @logEx
-    def makeTo(self, to):
-        jids = self.roster.keys()
-        jids.sort()
-        for jid in jids:
-            if jid.startswith(to):
-                return jid
-        else:
-            if "@" not in to:
-                return to + "@" + self.stream_info["hostname"]
-            else:
-                return to
-
-    @logEx
     def collate_args(self, arg, arg_names, help_func):
         args = self._white_space.split(arg)
         if not len(args):
@@ -141,7 +124,7 @@ class Interface(cmd.Cmd):
     @logEx
     def arg_complete(self, text, line, begidx, endix):
         args = self._white_space.split(line)
-        parser = DumbParser(self.cmdparser, self.debug, True)
+        parser = DumbParser(self.cmdparser, self.debug, True, self)
         parser.state = parser.STATE_ATTR_NAME
         parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
         for arg in args:
@@ -154,7 +137,7 @@ class Interface(cmd.Cmd):
     def completedefault(self, text, line, begidx, endix):
         if not line.startswith("<"):
             return []
-        parser = DumbParser(self.xsdparser, self.debug)
+        parser = DumbParser(self.xsdparser, self.debug, completer=self)
         parser.parse(line)
         return parser.complete(text)
 
@@ -191,6 +174,37 @@ class Interface(cmd.Cmd):
             self.rl_prompt = False
             print
         print ansiColor("CYAN") + ">>>> " + xml + ansiColor("RESET")
+
+    ##
+    ## Completer functions
+    ##
+    @logEx
+    def doComplete(self, name, match):
+        func = getattr(self, "complete_" + name)
+        if func:
+            return func(match)
+        else:
+            return []
+
+    @logEx
+    def complete_rosterTo(self, to):
+        jids = self.roster.keys()
+        jids.sort()
+        if not len(to):
+            return jids
+        for jid in jids:
+            if jid.startswith(to):
+                return [jid]
+        else:
+            if "@" not in to:
+                return [to + "@" + self.stream_info["hostname"]]
+            else:
+                return [to]
+
+    @logEx
+    def complete_from(self):
+        return self.stream_info["jid"]
+
 
     ###
     ### Command functions

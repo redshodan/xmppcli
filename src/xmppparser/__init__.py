@@ -61,7 +61,7 @@ class ValuePattern(object):
 
 class Attr(object):
     def __init__(self, name, values = None, required = False,
-                 vtype = VTYPE_NONE):
+                 vtype = VTYPE_NONE, completer = None):
         self.name = name
         self.required = required
         self.vtype = vtype
@@ -69,6 +69,7 @@ class Attr(object):
             self.values = values
         else:
             self.values = []
+        self.completer = completer
 
     def value(self):
         if len(self.values):

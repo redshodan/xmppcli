@@ -293,13 +293,17 @@ class XSDParser(object):
             required = True
         else:
             required = False
+        if "completer" in xelem.attrs:
+            completer = xelem.attrs["completer"].value()
+        else:
+            completer = None
         if "ref" in xelem.attrs:
             ref, ignore = self._findRef(schema, xelem.attrs["ref"].value(), None)
             sattr = Attr(ref.name, ref.values, required, ref.vtype)
         else:
             sattr = Attr(xelem.nsed(ns).attrs["name"].value(),
                          self._parseRestriction(schema, xelem), required,
-                         self._parseType(xelem))
+                         self._parseType(xelem), completer)
         if selem:
             selem.nsed(ns).attrs[sattr.name] = sattr
         return sattr

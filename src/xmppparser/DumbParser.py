@@ -14,7 +14,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import re, readline
+import re, readline, types
 from . import *
 
 
@@ -34,7 +34,8 @@ class DumbParser(object):
         STATE_CDATA : "cdata"
     }
 
-    def __init__(self, xsdparser, debug = False, cmdline = False):
+    def __init__(self, xsdparser, debug = False, cmdline = False,
+                 completer = None):
         self.xsdparser = xsdparser
         self.root = Elem("root")
         self.root.parent = self.root
@@ -52,6 +53,7 @@ class DumbParser(object):
         self.state = self.STATE_NONE
         self.debug = debug
         self.cmdline = cmdline
+        self.completer = completer
 
     def summarize(self, c):
         if not self.debug:
@@ -252,11 +254,16 @@ class DumbParser(object):
             else:
                 attr = [attr for attr in syn.nsed(xmlns).attrs.values()
                         if attr.name == self.cur_attr_name]
-                if len(attr) and len(attr[0].values):
-                    vallist = attr[0].values
+                if len(attr):
+                    if attr[0].completer:
+                        vallist = self.completer.doComplete(attr[0].completer,
+                                                            nqt)
+                    elif len(attr[0].values):
+                        vallist = attr[0].values
             if vallist:
                 ret = [quote + val for val in vallist
-                       if isinstance(val, str) and val.startswith(nqt)]
+                       if (isinstance(val, types.StringTypes) and
+                           val.startswith(nqt))]
                 if len(ret) == 1:
                     return [ret[0] + quote]
                 else:
@@ -288,8 +295,8 @@ class DumbParser(object):
                 return [text + "</" + syn.name + ">"]
             else:
                 ret = [cdata for cdata in syn.nsed(xmlns).cdata
-                       if isinstance(cdata, str) and
-                       cdata.startswith(text)]
+                       if (isinstance(cdata, types.StringTypes) and
+                           cdata.startswith(text))]
                 if len(ret):
                     return ret
                 else:
