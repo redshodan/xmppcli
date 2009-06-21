@@ -141,9 +141,11 @@ class Interface(cmd.Cmd):
     @logEx
     def arg_complete(self, text, line, begidx, endix):
         args = self._white_space.split(line)
-        parser = DumbParser(self.cmdparser, self.debug)
+        parser = DumbParser(self.cmdparser, self.debug, True)
         parser.state = parser.STATE_ATTR_NAME
         parser.cur_elem = Elem(args[0:1][0], parent = parser.root)
+        for arg in args:
+            parser.cur_elem.attrs[arg] = Attr(arg, [""])
         parser.parse(" ".join(args[1:]))
         ret = parser.complete(text)
         return ret

@@ -34,7 +34,7 @@ class DumbParser(object):
         STATE_CDATA : "cdata"
     }
 
-    def __init__(self, xsdparser, debug = False):
+    def __init__(self, xsdparser, debug = False, cmdline = False):
         self.xsdparser = xsdparser
         self.root = Elem("root")
         self.root.parent = self.root
@@ -51,6 +51,7 @@ class DumbParser(object):
         self.quote = 0
         self.state = self.STATE_NONE
         self.debug = debug
+        self.cmdline = cmdline
 
     def summarize(self, c):
         if not self.debug:
@@ -221,7 +222,10 @@ class DumbParser(object):
                    if attr.name.startswith(text) and
                        attr.name not in elem.attrs.keys()]
             if len(ret) == 0:
-                return [">"]
+                if self.cmdline:
+                    return []
+                else:
+                    return [">"]
             elif text in ret:
                 if syn.nsed(xmlns).attrs[text].vtype == VTYPE_FLAG:
                     return [text + " "]
