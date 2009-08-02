@@ -78,5 +78,44 @@ class XMPPClient(object):
         self.send(xml)
 
     def handleCmd(self, name, args):
+        handler = getattr(self, "cmd_" + name)
+        if handler:
+            return handler(args)
+
+    def cmd_available(self, args):
+        extra = ""
+        if "to" in args and args["to"]:
+            extra = " to='%s'" % args["to"]
+        self.send("<presence%s/>" % extra)
+
+    def cmd_away(self, args):
+        extra = ""
+        if "to" in args and args["to"]:
+            extra = " to='%s'" % args["to"]
+        self.send("<presence%s><show>away</show></presence>" % extra)
+
+    def cmd_xa(self, args):
+        extra = ""
+        if "to" in args and args["to"]:
+            extra = " to='%s'" % args["to"]
+        self.send("<presence%s><show>xa</show></presence>" % extra)
+
+    def cmd_dnd(self, args):
+        extra = ""
+        if "to" in args and args["to"]:
+            extra = " to='%s'" % args["to"]
+        self.send("<presence%s><show>dnd</show></presence>" % extra)
+
+    def cmd_unavailable(self, args):
+        extra = ""
+        if "to" in args and args["to"]:
+            extra = " to='%s'" % args["to"]
+        self.send("<presence type='unavailable'%s/>" % extra)
+
+    def cmd_subscribe(self, args):
+        if (("to" not in args) or (not len(args["to"]))):
+            print "Must supply a to"
+            return
         print "Subscribing to", args["to"]
         self.send("<presence to='%s' type='subscribe'/>" % args["to"])
+
