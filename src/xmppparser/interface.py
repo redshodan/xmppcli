@@ -56,10 +56,6 @@ def ansiColor(name):
 class Interface(cmd.Cmd):
 
     _white_space = re.compile("[ \\t\\n\\r]*")
-    _message_args = ["to", "type", "subject", "body", "thread"]
-    _presence_args = ["to", "type", "priority", "show", "status"]
-    _iq_args = ["to", "type", "id", "xmlns", "child"]
-    _roster_args = ["all"]
 
     def __init__(self, handler, stream_info, home, debug=False):
         import atexit, sys, termios
@@ -87,6 +83,11 @@ class Interface(cmd.Cmd):
         readline.set_completer_delims(delims)
         self.roster = {}
 
+        self.cmd_args = {}
+        for name, stanza in self.cmdparser.stanzas.iteritems():
+            self.cmd_args[stanza.name] = stanza.attrs
+            self.makeCmd(stanza)
+
     def cleanup(self):
         import termios, sys
         termios.tcsetattr(sys.__stdin__.fileno(), termios.TCSANOW,
@@ -95,10 +96,40 @@ class Interface(cmd.Cmd):
     def setRoster(self, roster):
         self.roster = roster
 
+    def makeCmd(self, stanza):
+        if not hasattr(self, "complete_" + stanza.name):
+            setattr(self, "complete_" + stanza.name, self.arg_complete)
+            setattr(Interface, "complete_" + stanza.name, self.arg_complete)
+        if not hasattr(self, "do_" + stanza.name):
+            setattr(self, "do_" + stanza.name,
+                    lambda *args: self.doCmd(stanza.name, *args))
+            setattr(Interface, "do_" + stanza.name,
+                    lambda *args: self.doCmd(stanza.name, *args))
+        if not hasattr(self, "help_" + stanza.name):
+            setattr(self, "help_" + stanza.name,
+                    lambda *args: self.doHelp(stanza.name, *args))
+            setattr(Interface, "help_" + stanza.name,
+                    lambda *args: self.doHelp(stanza.name, *args))
+
     @logEx
-    def collate_args(self, arg, arg_names, help_func):
+    def doCmd(self, name, arg):
+        argmap = self.collate_args(arg, name)
+        if argmap:
+            self.handler.handleCmd(name, argmap)
+
+    @logEx
+    def doHelp(self, name):
+        doc = "Usage: " + name
+        for attr in self.cmd_args[name]:
+            doc += " [%s]" % attr
+        print doc
+
+    @logEx
+    def collate_args(self, arg, cmd_name):
+        cmd_args = self.cmd_args[cmd_name]
         args = self._white_space.split(arg)
         if not len(args):
+            help_func = getattr(self, "help_" + cmd_name)
             help_func()
             return None, None
         argmap = {}
@@ -110,13 +141,13 @@ class Interface(cmd.Cmd):
                 argmap[words[0]] = val
             else:
                 ordered.append(arg)
-        for index in range(len(arg_names)):
+        for index in range(len(cmd_args.ordered)):
             if index >= len(ordered):
                 break
-            key = arg_names[index]
-            if key in argmap:
+            key = cmd_args.ordered[index]
+            if key.name in argmap:
                 return
-            argmap[key] = ordered[index]
+            argmap[key.name] = ordered[index]
         return argmap
 
     @logEx
@@ -203,6 +234,14 @@ class Interface(cmd.Cmd):
     def complete_from(self):
         return self.stream_info["jid"]
 
+    @logEx
+    def complete_hostJid(self, to):
+        if not len(to):
+            return []
+        elif "@" in to:
+            return [to]
+        else:
+            return [to + "@" + self.stream_info["hostname"]]
 
     ###
     ### Command functions
@@ -212,32 +251,9 @@ class Interface(cmd.Cmd):
     def help_help(self):
         self.do_help()
 
-    ### presence
-    @logEx
-    def help_presence(self):
-        print "Usage: presence [to] [type] [priority] [show] [status]"
-
-    @logEx
-    def do_presence(self, arg):
-        argmap = self.collate_args(arg, self._presence_args,
-                                   self.help_presence)
-        if argmap:
-            print "PRESENCE:", argmap
-            #self.handler.handleUIPresence(argmap)
-
-    @logEx
-    def complete_presence(self, text, line, begidx, endix):
-        return self.arg_complete(text, line, begidx, endix)
-
-    ### roster
-    @logEx
-    def help_roster(self):
-        print "Usage: roster"
-
     @logEx
     def do_roster(self, arg):
-        argmap = self.collate_args(arg, self._roster_args,
-                                   self.help_roster)
+        argmap = self.collate_args(arg, "roster")
         if not argmap:
             return
         all = argmap["all"]
@@ -262,7 +278,3 @@ class Interface(cmd.Cmd):
                     print "%s(%d)" % (jid, num)
                 else:
                     print "%s" % jid
-
-    @logEx
-    def complete_roster(self, text, line, begidx, endix):
-        return self.arg_complete(text, line, begidx, endix)

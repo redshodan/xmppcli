@@ -45,6 +45,16 @@ vtypes = \
 }
 
 
+import UserDict
+class OrderedDict(UserDict.IterableUserDict):
+    def __init__(self):
+        UserDict.IterableUserDict.__init__(self)
+        self.ordered = []
+
+    def __setitem__(self, key, value):
+        UserDict.IterableUserDict.__setitem__(self, key, value)
+        self.ordered.append(value)
+
 class HList(list):
     def __init__(self, *args):
         self.extend(args)
@@ -258,7 +268,7 @@ class NSed(object):
                  vtype = VTYPE_NONE):
         self.ns = ns
         self.nses = {}
-        self.attrs = {}
+        self.attrs = OrderedDict()
         if attrs:
             for attr in attrs:
                 self.attrs[attr.name] = attr
