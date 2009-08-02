@@ -31,11 +31,12 @@ mappings = \
 
     # presence
     [None, "presence", "jabber:client", "cmds.xsd"],
-    [None, "subscribe", "jabber:client", "cmds.xsd"],
     [None, "available", "jabber:client", "cmds.xsd"],
     [None, "away", "jabber:client", "cmds.xsd"],
     [None, "xa", "jabber:client", "cmds.xsd"],
     [None, "dnd", "jabber:client", "cmds.xsd"],
+    [None, "unavailable", "jabber:client", "cmds.xsd"],
+    [None, "subscribe", "jabber:client", "cmds.xsd"],
 
     # Roster
     [None, "roster", "jabber:client", "cmds.xsd"],

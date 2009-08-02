@@ -37,6 +37,13 @@
      </xs:complexType>
   </xs:element>
 
+  <xs:element name='xa'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+     </xs:complexType>
+  </xs:element>
+
   <xs:element name='dnd'>
      <xs:complexType>
        <xs:attribute name='to' use='optional' type='xs:string'
@@ -44,7 +51,7 @@
      </xs:complexType>
   </xs:element>
 
-  <xs:element name='xa'>
+  <xs:element name='unavailable'>
      <xs:complexType>
        <xs:attribute name='to' use='optional' type='xs:string'
                      completer='rosterTo'/>
