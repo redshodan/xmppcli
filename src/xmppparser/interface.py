@@ -115,8 +115,6 @@ class Interface(cmd.Cmd):
                 break
             key = arg_names[index]
             if key in argmap:
-                print
-                print key, "already in keyword arguments"
                 return
             argmap[key] = ordered[index]
         return argmap
