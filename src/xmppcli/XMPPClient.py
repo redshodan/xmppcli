@@ -76,3 +76,7 @@ class XMPPClient(object):
     def handleXML(self, xml):
         print "handleXML:", xml
         self.send(xml)
+
+    def handleCmd(self, name, args):
+        print "Subscribing to", args["to"]
+        self.send("<presence to='%s' type='subscribe'/>" % args["to"])
