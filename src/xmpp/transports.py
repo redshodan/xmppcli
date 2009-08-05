@@ -31,6 +31,7 @@ import socket,select,base64,dispatcher,sys
 from simplexml import ustr
 from client import PlugIn
 from protocol import *
+import ssl
 
 # determine which DNS resolution library is available
 HAVE_DNSPYTHON = False
@@ -312,9 +313,13 @@ class TLS(PlugIn):
         """ Immidiatedly switch socket to TLS mode. Used internally."""
         """ Here we should switch pending_data to hint mode."""
         tcpsock=self._owner.Connection
-        tcpsock._sslObj    = socket.ssl(tcpsock._sock, None, None)
-        tcpsock._sslIssuer = tcpsock._sslObj.issuer()
-        tcpsock._sslServer = tcpsock._sslObj.server()
+        if ((sys.version_info[0] >= 2) and
+            (sys.version_info[1] >= 6)):
+            tcpsock._sslObj    = ssl.wrap_socket(tcpsock._sock)
+        else:
+            tcpsock._sslObj    = socket.ssl(tcpsock._sock, None, None)
+            tcpsock._sslIssuer = tcpsock._sslObj.issuer()
+            tcpsock._sslServer = tcpsock._sslObj.server()
         tcpsock._recv = tcpsock._sslObj.read
         tcpsock._send = tcpsock._sslObj.write
 
