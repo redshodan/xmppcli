@@ -15,25 +15,27 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import sys, xmpp
-import xmppparser
-from xmppparser import Interface
-from .XMPPClient import XMPPClient
 
+import sys, xmpp
+#import xmppparser
+#from xmppparser import Interface
+from .XMPPClient import XMPPClient
+from .ui import UI
+import xmppcli.log as log
 
 def run():
-    import logging
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-8s %(message)s')
-    print "Connecting..."
+    log.setup()
+    xmpp.debug.colors_enabled = False
+    ui = UI()
+    log.info("Connecting...")
     jid = xmpp.JID(sys.argv[1])
-    client = XMPPClient(jid, sys.argv[2])
+    client = XMPPClient(ui, jid, sys.argv[2])
+    ui.setClient(client)
     client.connect()
-    print "connected"
+    log.info("connected")
     stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
                    "resource" : jid.getResource(), "jid" : str(jid)}
-    ui = Interface(client, stream_info, "../../xmppparser/trunk")
-    client.setUI(ui)
+#    ui = Interface(client, stream_info, "../../xmppparser/trunk")
     client.run()
     ui.setRoster(client.conn.Roster)
     ui.run()

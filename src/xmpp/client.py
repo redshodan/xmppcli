@@ -21,7 +21,7 @@ examples of xmpppy structures usage.
 These classes can be used for simple applications "AS IS" though.
 """
 
-import socket
+import socket, sys
 import debug
 Debug=debug
 Debug.DEBUGGING_IS_ON=1
@@ -90,7 +90,7 @@ class PlugIn:
 import transports,dispatcher,auth,roster
 class CommonClient:
     """ Base for Client and Component classes."""
-    def __init__(self,server,port=5222,debug=['always', 'nodebuilder']):
+    def __init__(self,server,port=5222,debug=['always', 'nodebuilder'], log_file=sys.stderr):
         """ Caches server name and (optionally) port to connect to. "debug" parameter specifies
             the debug IDs that will go into debug output. You can either specifiy an "include"
             or "exclude" list. The latter is done via adding "always" pseudo-ID to the list.
@@ -103,7 +103,7 @@ class CommonClient:
         self.Server=server
         self.Port=port
         if debug and type(debug)<>list: debug=['always', 'nodebuilder']
-        self._DEBUG=Debug.Debug(debug)
+        self._DEBUG=Debug.Debug(debug, log_file=log_file)
         self.DEBUG=self._DEBUG.Show
         self.debug_flags=self._DEBUG.debug_flags
         self.debug_flags.append(self.DBG)
@@ -188,7 +188,8 @@ class CommonClient:
 
 class Client(CommonClient):
     """ Example client class, based on CommonClient. """
-    def connect(self,server=None,proxy=None,secure=None,use_srv=True):
+    def connect(self,server=None,proxy=None,secure=None,use_srv=True,
+                debug=['always', 'nodebuilder'], log_file=sys.stderr):
         """ Connect to jabber server. If you want to specify different ip/port to connect to you can
             pass it as tuple as first parameter. If there is HTTP proxy between you and server 
             specify it's address and credentials (if needed) in the second argument.

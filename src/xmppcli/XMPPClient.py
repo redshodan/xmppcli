@@ -16,47 +16,58 @@
 
 
 import xmpp, types
+from xmppcli import log
 
 class XMPPClient(object):
 
-    def __init__(self, jid, password):
+    def __init__(self, ui, jid, password):
+        self.ui = ui
         if isinstance(jid, types.StringTypes):
             self.jid = xmpp.JID(jid)
         else:
             self.jid = jid
         self.password = password
         self.conn = None
+        self.running = True
 
-    def setUI(self, ui):
-        self.ui = ui
+    ### File object interface for xmpppy logging
+    def write(self, buff):
+        self.ui.log(buff)
+    def flush(self):
+        pass
 
     def connect(self):
-        self.conn = xmpp.Client(self.jid.getDomain(),
+        self.conn = xmpp.Client(self.jid.getDomain(), log_file=self,
+                                #debug=None)
                                 debug=["always", "nodebuilder", "dispatcher"])
         resp = self.conn.connect()
         if not resp:
             raise Exception("Failed to connect")
-        print "Connected with:", resp
+        log.info("Connected with: %s", resp)
         resp = self.conn.auth(self.jid.getNode(), self.password,
                               self.jid.getResource())
         if not resp:
             raise Exception("Failed to authenticate")
-        print "Authed with:", resp
-        self.conn.RegisterHandler("iq", self.onIq)
-        self.conn.RegisterHandler("presence", self.onPresence)
-        self.conn.RegisterHandler("message", self.onMessage)
+        log.info("Authed with: %s", resp)
+        # self.conn.RegisterHandler("iq", self.onIq)
+        # self.conn.RegisterHandler("presence", self.onPresence)
+        # self.conn.RegisterHandler("message", self.onMessage)
         self.conn.sendInitPresence()
 
     def run(self):
         import thread
         def runner(self):
             try:
-                while True:
+                while self.running:
                     self.conn.Process(1)
             except Exception, e:
                 print "******************EXCEPTION**********************"
                 print e
         thread.start_new_thread(runner, (self,))
+
+    def stop(self):
+        self.running = False
+        self.ui.stop()
 
     def send(self, stanza):
         self.conn.send(stanza)
