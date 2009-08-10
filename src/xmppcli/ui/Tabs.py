@@ -18,10 +18,12 @@ import types
 import urwid
 
 class Tabs(urwid.Widget):
-    def __init__(self, widgets, focus_item=None):
+    def __init__(self, widgets, status):
         urwid.Widget.__init__(self)
         self.widgets = widgets
+        self.status = status
         self.selected = 0
+        self.status.setBuffName(self.cur().name)
 
     def append(self, widget):
         self.widgets.append(widget)
@@ -35,16 +37,21 @@ class Tabs(urwid.Widget):
                 del self.widgets[index]
                 break
 
+    def cur(self):
+        return self.widgets[self.selected]
+
     def next(self):
         self.selected = self.selected + 1
         if self.selected >= len(self.widgets):
             self.selected = 0
+        self.status.setBuffName(self.cur().name)
         self._invalidate()
 
     def prev(self):
         self.selected = self.selected - 1
         if self.selected < 0:
             self.selected = len(self.widgets) - 1
+        self.status.setBuffName(self.cur().name)
         self._invalidate()
 
     def select(self, index):
@@ -60,4 +67,4 @@ class Tabs(urwid.Widget):
         self._invalidate()
 
     def __getattr__(self, name):
-        return getattr(self.widgets[self.selected], name)
+        return getattr(self.cur(), name)

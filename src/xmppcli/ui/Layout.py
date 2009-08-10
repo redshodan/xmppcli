@@ -25,15 +25,16 @@ class Layout(object):
     def __init__(self, ui):
         self.ui = ui
         self.roster = Roster()
-        self.roster_box = urwid.LineBox(self.roster)
-        self.logbuff = LogBuffer(self)
-        log.addStreamHandler(self.logbuff)
-        self.xmlbuff = LogBuffer(self)
-        log.addXMLHandler(self.xmlbuff)
-        self.tabs = Tabs([self.logbuff, self.xmlbuff])
         ### StatusBar
         self.status = StatusBar()
         self.attr_status = urwid.AttrWrap(self.status, "status")
+        # Tabs
+        self.roster_box = urwid.LineBox(self.roster)
+        self.logbuff = LogBuffer("Logs", self)
+        log.addStreamHandler(self.logbuff)
+        self.xmlbuff = LogBuffer("XML", self)
+        log.addXMLHandler(self.xmlbuff)
+        self.tabs = Tabs([self.logbuff, self.xmlbuff], self.status)
         ### Input area
         self.input = urwid.Edit()
         self.attr_input = urwid.AttrWrap(self.input, "input")

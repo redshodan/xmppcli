@@ -20,6 +20,17 @@ from xmppcli import log
 class StatusBar(urwid.Text):
     def __init__(self):
         urwid.Text.__init__(self, "Status Bar!")
+        self.buffname = None
 
     def selectable(self):
         return False
+
+    def setBuffName(self, name):
+        self.buffname = name
+        self.update()
+
+    def update(self):
+        text = ""
+        if self.buffname:
+            text = "%s[%s]" % (text, self.buffname)
+        self.set_text(text)
