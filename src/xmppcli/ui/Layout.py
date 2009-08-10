@@ -18,48 +18,70 @@ import urwid
 from .TextBuffer import TextBuffer
 from .Tabs import Tabs
 from .StatusBar import StatusBar
+from .Roster import Roster
 from xmppcli import log
 
-class Layout(urwid.Pile):
-    palette = \
-       [("input", "light gray", "default"),
-        ("status", "white", "dark blue")]
-
-    def __init__(self, ui, screen):
+class Layout(object):
+    def __init__(self, ui):
         self.ui = ui
-        self.screen = screen
-        self.screen.register_palette(Layout.palette)
+        self.roster = Roster()
+        self.roster_box = urwid.LineBox(self.roster)
         self.logbuff = TextBuffer()
         self.buff2 = TextBuffer()
         self.buff2.append("This is buff2, biaaaatch!")
         self.tabs = Tabs([self.logbuff])
         self.tabs.append(self.buff2)
+        ### StatusBar
         self.status = StatusBar()
         self.attr_status = urwid.AttrWrap(self.status, "status")
+        ### Input area
         self.input = urwid.Edit()
         self.attr_input = urwid.AttrWrap(self.input, "input")
-        urwid.Pile.__init__(self,
-                            [self.tabs, ("flow", self.attr_status),
-                             ("flow", self.attr_input)], self.attr_input)
+        ### Pile
+        self.pile = urwid.Pile(
+            [self.tabs, ("flow", self.attr_status),
+             ("flow", self.attr_input)], self.attr_input)
+        self.top = self.pile
+        ### Overlay
+        self.roster_overlay = urwid.Overlay(self.roster_box, self.pile, "right",
+                                            ("relative", 50), "top",
+                                            ("relative", 100))
+        self.fullsizes = [self.roster_overlay]
 
     def keypress(self, size, key):
+        if self.top in self.fullsizes:
+            pass_size = size
+        else:
+            pass_size = size[:1]
         if urwid.is_mouse_event(key):
             event, button, col, row = key
-            self.get_focus().mouse_event(size, *key, focus=True)
+            self.top.mouse_event(pass_size, *key, focus=True)
         elif key == "window resize":
             self.logbuff.append("window resize")
             self.ui.refreshSize()
-            self.screen._clear()
+            self.ui.clear()
         else:
-            key = self.get_focus().keypress(size[:1], key)
+            key = self.top.keypress(pass_size, key)
             if key:
                 self.logbuff.append("KEY %s" % key)
                 self.unhandled(size, key)
 
     def unhandled(self, size, key):
-        self.screen.clear()
-        self.tabs.next()
+        if key == "ctrl r":
+            if self.top == self.roster_overlay:
+                self.top = self.pile
+            else:
+                self.roster.update()
+                self.top = self.roster_overlay
+        else:
+            self.tabs.next()
         self._invalidate()
 
     def log(self, buff):
         self.logbuff.append(buff.rstrip("\n"))
+
+    def setRoster(self, roster):
+        self.roster.setRoster(roster)
+
+    def __getattr__(self, name):
+        return getattr(self.top, name)

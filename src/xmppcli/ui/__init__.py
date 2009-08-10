@@ -21,6 +21,10 @@ from xmppcli import log
 from .Layout import Layout
 
 class UI(object):
+    palette = \
+       [("input", "light gray", "default"),
+        ("status", "white", "dark blue")]
+
     def __init__(self):
         self.client = None
         self.running = True
@@ -28,14 +32,15 @@ class UI(object):
         fcntl.fcntl(self.pipe[0], fcntl.F_SETFL, os.O_NONBLOCK)
         self.fds = [[sys.stdin.fileno(), self.pipe[0]], [], []]
         self.screen = urwid.curses_display.Screen()
-        self.layout = Layout(self, self.screen)
+        self.screen.register_palette(UI.palette)
+        self.layout = Layout(self)
         self.size = None
 
     def setClient(self, client):
         self.client = client
 
     def setRoster(self, roster):
-        self.roster = roster
+        self.layout.setRoster(roster)
 
     def run(self):
         self.screen.run_wrapper(self._run)
@@ -82,6 +87,9 @@ class UI(object):
         osize = self.size
         self.size = self.screen.get_cols_rows()
         self.log("refreshSize: old=%s new=%s" % (osize, self.size))
+
+    def clear(self):
+        self.screen.clear()
 
     def log(self, buff):
         self.layout.log(buff)
