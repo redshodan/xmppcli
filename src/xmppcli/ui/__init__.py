@@ -28,7 +28,8 @@ class UI(object):
         fcntl.fcntl(self.pipe[0], fcntl.F_SETFL, os.O_NONBLOCK)
         self.fds = [[sys.stdin.fileno(), self.pipe[0]], [], []]
         self.screen = urwid.curses_display.Screen()
-        self.layout = Layout(self.screen)
+        self.layout = Layout(self, self.screen)
+        self.size = None
 
     def setClient(self, client):
         self.client = client
@@ -41,15 +42,15 @@ class UI(object):
 
     def _run(self):
         self.screen.set_mouse_tracking()
-        size = self.screen.get_cols_rows()
+        self.refreshSize()
         while self.running:
-            canvas = self.layout.render(size, focus=True)
-            self.screen.draw_screen(size, canvas)
+            canvas = self.layout.render(self.size, focus=True)
+            self.screen.draw_screen(self.size, canvas)
             keys = self.getInput()
             if not keys:
                 continue
             for key in keys:
-                self.layout.keypress(size, key)
+                self.layout.keypress(self.size, key)
 
     def getInput(self):
         keys = None
@@ -76,6 +77,11 @@ class UI(object):
 
     def wake(self):
         os.write(self.pipe[1], "\0")
+
+    def refreshSize(self):
+        osize = self.size
+        self.size = self.screen.get_cols_rows()
+        self.log("refreshSize: old=%s new=%s" % (osize, self.size))
 
     def log(self, buff):
         self.layout.log(buff)

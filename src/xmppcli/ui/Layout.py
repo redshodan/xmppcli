@@ -17,35 +17,49 @@
 import urwid
 from .TextBuffer import TextBuffer
 from .Tabs import Tabs
+from .StatusBar import StatusBar
 from xmppcli import log
 
-class Layout(urwid.Widget):
-    def __init__(self, screen):
+class Layout(urwid.Pile):
+    palette = \
+       [("input", "light gray", "default"),
+        ("status", "white", "dark blue")]
+
+    def __init__(self, ui, screen):
+        self.ui = ui
         self.screen = screen
+        self.screen.register_palette(Layout.palette)
         self.logbuff = TextBuffer()
         self.buff2 = TextBuffer()
         self.buff2.append("This is buff2, biaaaatch!")
         self.tabs = Tabs([self.logbuff])
         self.tabs.append(self.buff2)
-        self.widget = self.tabs
+        self.status = StatusBar()
+        self.attr_status = urwid.AttrWrap(self.status, "status")
+        self.input = urwid.Edit()
+        self.attr_input = urwid.AttrWrap(self.input, "input")
+        urwid.Pile.__init__(self,
+                            [self.tabs, ("flow", self.attr_status),
+                             ("flow", self.attr_input)], self.attr_input)
 
     def keypress(self, size, key):
         if urwid.is_mouse_event(key):
             event, button, col, row = key
-            self.widget.mouse_event(size, *key, focus=True)
+            self.get_focus().mouse_event(size, *key, focus=True)
         elif key == "window resize":
-            size = self.screen.get_cols_rows()
-            self.log("resize: %s" % str(size))
+            self.logbuff.append("window resize")
+            self.ui.refreshSize()
+            self.screen._clear()
         else:
-            key = self.widget.keypress(size, key)
+            key = self.get_focus().keypress(size[:1], key)
             if key:
+                self.logbuff.append("KEY %s" % key)
                 self.unhandled(size, key)
 
     def unhandled(self, size, key):
+        self.screen.clear()
         self.tabs.next()
+        self._invalidate()
 
     def log(self, buff):
         self.logbuff.append(buff.rstrip("\n"))
-
-    def __getattr__(self, name):
-        return getattr(self.widget, name)
