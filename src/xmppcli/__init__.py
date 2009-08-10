@@ -31,11 +31,10 @@ def run():
     jid = xmpp.JID(sys.argv[1])
     client = XMPPClient(ui, jid, sys.argv[2])
     ui.setClient(client)
-    client.connect()
-    log.info("connected")
-    stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
-                   "resource" : jid.getResource(), "jid" : str(jid)}
-#    ui = Interface(client, stream_info, "../../xmppparser/trunk")
-    client.run()
-    ui.setRoster(client.conn.Roster)
+    # stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
+    #                "resource" : jid.getResource(), "jid" : str(jid)}
+    # ui = Interface(client, stream_info, "../../xmppparser/trunk")
+    def connectedCB():
+        ui.setRoster(client.conn.Roster)
+    client.run(conncb=connectedCB)
     ui.run()

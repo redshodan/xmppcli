@@ -32,7 +32,6 @@ class LineWalker(urwid.ListWalker):
         self.lines.append(urwid.Text(line))
         self.set_focus(len(self.lines) - 1)
 
-
 class TextBuffer(urwid.ListBox):
     def __init__(self):
         self.walker = LineWalker()
@@ -40,3 +39,16 @@ class TextBuffer(urwid.ListBox):
 
     def append(self, buff):
         self.walker.append(buff)
+
+### File object interface for logging
+class LogBuffer(TextBuffer):
+    def __init__(self, layout):
+        TextBuffer.__init__(self)
+        self.layout = layout
+
+    def write(self, buff):
+        self.append(buff.rstrip("\r\n"))
+        self.layout.wake()
+
+    def flush(self):
+        pass

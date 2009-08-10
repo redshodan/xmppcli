@@ -86,11 +86,7 @@ class UI(object):
     def refreshSize(self):
         osize = self.size
         self.size = self.screen.get_cols_rows()
-        self.log("refreshSize: old=%s new=%s" % (osize, self.size))
+        log.debug("refreshSize: old=%s new=%s" % (osize, self.size))
 
     def clear(self):
         self.screen.clear()
-
-    def log(self, buff):
-        self.layout.log(buff)
-        self.wake()

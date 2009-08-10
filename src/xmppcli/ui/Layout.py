@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import urwid
-from .TextBuffer import TextBuffer
+from .TextBuffer import TextBuffer, LogBuffer
 from .Tabs import Tabs
 from .StatusBar import StatusBar
 from .Roster import Roster
@@ -26,11 +26,11 @@ class Layout(object):
         self.ui = ui
         self.roster = Roster()
         self.roster_box = urwid.LineBox(self.roster)
-        self.logbuff = TextBuffer()
-        self.buff2 = TextBuffer()
-        self.buff2.append("This is buff2, biaaaatch!")
-        self.tabs = Tabs([self.logbuff])
-        self.tabs.append(self.buff2)
+        self.logbuff = LogBuffer(self)
+        log.addStreamHandler(self.logbuff)
+        self.xmlbuff = LogBuffer(self)
+        log.addXMLHandler(self.xmlbuff)
+        self.tabs = Tabs([self.logbuff, self.xmlbuff])
         ### StatusBar
         self.status = StatusBar()
         self.attr_status = urwid.AttrWrap(self.status, "status")
@@ -57,13 +57,12 @@ class Layout(object):
             event, button, col, row = key
             self.top.mouse_event(pass_size, *key, focus=True)
         elif key == "window resize":
-            self.logbuff.append("window resize")
+            log.debug("window resize")
             self.ui.refreshSize()
             self.ui.clear()
         else:
             key = self.top.keypress(pass_size, key)
             if key:
-                self.logbuff.append("KEY %s" % key)
                 self.unhandled(size, key)
 
     def unhandled(self, size, key):
@@ -73,15 +72,21 @@ class Layout(object):
             else:
                 self.roster.update()
                 self.top = self.roster_overlay
-        else:
+            self._invalidate()
+        elif key == "ctrl n":
             self.tabs.next()
-        self._invalidate()
-
-    def log(self, buff):
-        self.logbuff.append(buff.rstrip("\n"))
+            self._invalidate()
+        elif key == "ctrl p":
+            self.tabs.prev()
+            self._invalidate()
+        else:
+            log.debug("KEY %s" % key)
 
     def setRoster(self, roster):
         self.roster.setRoster(roster)
+
+    def wake(self):
+        self.ui.wake()
 
     def __getattr__(self, name):
         return getattr(self.top, name)

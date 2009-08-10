@@ -46,7 +46,6 @@ class LineWalker(urwid.ListWalker):
             return self.lines[at], at
 
     def append(self, line):
-        log.debug(line)
         self.lines.append(urwid.Text(line))
         self.set_focus(len(self.lines) - 1)
 

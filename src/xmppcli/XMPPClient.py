@@ -14,12 +14,10 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 import xmpp, types
 from xmppcli import log
 
 class XMPPClient(object):
-
     def __init__(self, ui, jid, password):
         self.ui = ui
         if isinstance(jid, types.StringTypes):
@@ -30,15 +28,8 @@ class XMPPClient(object):
         self.conn = None
         self.running = True
 
-    ### File object interface for xmpppy logging
-    def write(self, buff):
-        self.ui.log(buff)
-    def flush(self):
-        pass
-
     def connect(self):
-        self.conn = xmpp.Client(self.jid.getDomain(), log_file=self,
-                                #debug=None)
+        self.conn = xmpp.Client(self.jid.getDomain(), log_file=log.xmpppy_proxy,
                                 debug=["always", "nodebuilder", "dispatcher"])
         resp = self.conn.connect()
         if not resp:
@@ -49,20 +40,25 @@ class XMPPClient(object):
         if not resp:
             raise Exception("Failed to authenticate")
         log.info("Authed with: %s", resp)
-        # self.conn.RegisterHandler("iq", self.onIq)
-        # self.conn.RegisterHandler("presence", self.onPresence)
-        # self.conn.RegisterHandler("message", self.onMessage)
+        self.conn.RegisterHandler("iq", self.onIq)
+        self.conn.RegisterHandler("presence", self.onPresence)
+        self.conn.RegisterHandler("message", self.onMessage)
         self.conn.sendInitPresence()
 
-    def run(self):
+    def run(self, conncb=None):
         import thread
         def runner(self):
+            self.connect()
+            log.info("connected")
+            if conncb:
+                conncb()
             try:
                 while self.running:
                     self.conn.Process(1)
             except Exception, e:
-                print "******************EXCEPTION**********************"
-                print e
+                log.exception(
+                    "******************EXCEPTION**********************")
+                log.exception(e)
         thread.start_new_thread(runner, (self,))
 
     def stop(self):
@@ -73,13 +69,13 @@ class XMPPClient(object):
         self.conn.send(stanza)
 
     def onIq(self, conn, iq):
-        print "onIq", iq
+        log.xmlIN(str(iq))
 
     def onPresence(self, conn, pres):
-        print "onPres", pres
+        log.xmlIN(str(pres))
 
     def onMessage(self, conn, msg):
-        print "onMsg", msg
+        log.xmlIN(str(msg))
 
     ##
     ## UI handlers
@@ -130,3 +126,15 @@ class XMPPClient(object):
         print "Subscribing to", args["to"]
         self.send("<presence to='%s' type='subscribe'/>" % args["to"])
 
+
+def connect(*args, **kwargs):
+    import thread
+    client = XMPPClient(*args, **kwargs)
+    def runner(client):
+        try:
+            while self.running:
+                self.conn.Process(1)
+        except Exception, e:
+            print "******************EXCEPTION**********************"
+            print e
+    thread.start_new_thread(runner, (self,))
