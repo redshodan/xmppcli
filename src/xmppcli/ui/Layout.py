@@ -19,6 +19,7 @@ from .TextBuffer import TextBuffer, LogBuffer
 from .Tabs import Tabs
 from .StatusBar import StatusBar
 from .Roster import Roster
+from .Input import Input
 from xmppcli import log
 
 class Layout(object):
@@ -28,7 +29,7 @@ class Layout(object):
         ### StatusBar
         self.status = StatusBar()
         self.attr_status = urwid.AttrWrap(self.status, "status")
-        # Tabs
+        ### Tabs
         self.roster_box = urwid.LineBox(self.roster)
         self.logbuff = LogBuffer("Logs", self)
         log.addStreamHandler(self.logbuff)
@@ -36,7 +37,7 @@ class Layout(object):
         log.addXMLHandler(self.xmlbuff)
         self.tabs = Tabs([self.logbuff, self.xmlbuff], self.status)
         ### Input area
-        self.input = urwid.Edit()
+        self.input = Input(self)
         self.attr_input = urwid.AttrWrap(self.input, "input")
         ### Pile
         self.pile = urwid.Pile(

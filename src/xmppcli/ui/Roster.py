@@ -80,3 +80,4 @@ class Roster(urwid.ListBox):
                 if "show" in rentry and rentry["show"]:
                     val = val + " show(%s)" % rentry["show"]
                 self.walker.append(val)
+        self.walker.set_focus(0)

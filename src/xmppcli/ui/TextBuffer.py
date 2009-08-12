@@ -65,11 +65,11 @@ class TextBuffer(urwid.ListBox):
 class LogBuffer(TextBuffer):
     def __init__(self, name, layout):
         TextBuffer.__init__(self, name)
-        self.layout = layout
+        self.lo = layout
 
     def write(self, buff):
         self.append(buff.rstrip("\r\n"))
-        self.layout.wake()
+        self.lo.wake()
 
     def flush(self):
         pass
