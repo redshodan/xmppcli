@@ -16,6 +16,7 @@
 
 import types
 import urwid
+from xmppcli import log
 
 class Tabs(urwid.Widget):
     def __init__(self, widgets, status):
@@ -23,19 +24,22 @@ class Tabs(urwid.Widget):
         self.widgets = widgets
         self.status = status
         self.selected = 0
-        self.status.setBuffName(self.cur().name)
+        self.setStatusName()
 
     def append(self, widget):
         self.widgets.append(widget)
+        self.setStatusName()
 
     def prepend(self, widget):
         self.widgets.append(widget)
+        self.setStatusName()
 
     def remove(self, widget):
         for index in range(len(self.widgets)):
             if self.widgets[index] == widget:
                 del self.widgets[index]
                 break
+        self.setStatusName()
 
     def cur(self):
         return self.widgets[self.selected]
@@ -44,16 +48,27 @@ class Tabs(urwid.Widget):
         self.selected = self.selected + 1
         if self.selected >= len(self.widgets):
             self.selected = 0
-        self.status.setBuffName(self.cur().name)
+        self.setStatusName()
         self._invalidate()
 
     def prev(self):
         self.selected = self.selected - 1
         if self.selected < 0:
             self.selected = len(self.widgets) - 1
-        self.status.setBuffName(self.cur().name)
+        self.setStatusName()
         self._invalidate()
 
+    def setStatusName(self):
+        names = []
+        for idx in range(len(self.widgets)):
+            if idx == self.selected:
+                color = 'status-hilite'
+            else:
+                color = 'status'
+            names.append((color, '[' + self.widgets[idx].name + ']'))
+            names.append(" ")
+        self.status.setBuffName(names)
+    
     def select(self, index):
         if type(index) is types.IntType:
             self.selected = index

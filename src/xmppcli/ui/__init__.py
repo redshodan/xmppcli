@@ -23,7 +23,9 @@ from .Layout import Layout
 class UI(object):
     palette = \
        [("input", "light gray", "default"),
-        ("status", "white", "dark blue")]
+        ("status", "white", "dark blue"),
+        ("status-hilite", "dark blue", "light gray"),
+        ]
 
     def __init__(self):
         self.client = None

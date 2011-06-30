@@ -15,19 +15,33 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import sys, xmpp
+from optparse import OptionParser
 #import xmppparser
 #from xmppparser import Interface
 from .XMPPClient import XMPPClient
 from .ui import UI
 import xmppcli.log as log
 
+
+def parseArgs():
+    usage = "usage: %prog [options] jid password"
+    parser = OptionParser(usage=usage)
+
+    (options, args) = parser.parse_args()
+    if len(args) != 2:
+        parser.print_help()
+        sys.exit(-1)
+    
+    return options, args
+
+
 def run():
+    options, args = parseArgs()
     log.setup()
     xmpp.debug.colors_enabled = False
     ui = UI()
-    log.info("Connecting...")
-    jid = xmpp.JID(sys.argv[1])
-    client = XMPPClient(ui, jid, sys.argv[2])
+    jid = xmpp.JID(args[0])
+    client = XMPPClient(ui, jid, args[1])
     ui.setClient(client)
     # stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
     #                "resource" : jid.getResource(), "jid" : str(jid)}

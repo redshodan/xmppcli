@@ -48,11 +48,12 @@ class XMPPClient(object):
     def run(self, conncb=None):
         import thread
         def runner(self):
-            self.connect()
-            log.info("connected")
-            if conncb:
-                conncb()
             try:
+                log.info("XMPPClient: Connecting...")
+                self.connect()
+                log.info("XMPPClient: connected")
+                if conncb:
+                    conncb()
                 while self.running:
                     self.conn.Process(1)
             except Exception, e:
@@ -127,14 +128,14 @@ class XMPPClient(object):
         self.send("<presence to='%s' type='subscribe'/>" % args["to"])
 
 
-def connect(*args, **kwargs):
-    import thread
-    client = XMPPClient(*args, **kwargs)
-    def runner(client):
-        try:
-            while self.running:
-                self.conn.Process(1)
-        except Exception, e:
-            print "******************EXCEPTION**********************"
-            print e
-    thread.start_new_thread(runner, (self,))
+# def connect(*args, **kwargs):
+#     import thread
+#     client = XMPPClient(*args, **kwargs)
+#     def runner(client):
+#         try:
+#             while self.running:
+#                 self.conn.Process(1)
+#         except Exception, e:
+#             print "******************EXCEPTION**********************"
+#             print e
+#     thread.start_new_thread(runner, (self,))

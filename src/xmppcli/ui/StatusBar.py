@@ -32,5 +32,5 @@ class StatusBar(urwid.Text):
     def update(self):
         text = ""
         if self.buffname:
-            text = "%s[%s]" % (text, self.buffname)
+            text = self.buffname
         self.set_text(text)
