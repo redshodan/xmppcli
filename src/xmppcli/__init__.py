@@ -24,7 +24,7 @@ import xmppcli.log as log
 
 
 def parseArgs():
-    usage = "usage: %prog [options] jid password"
+    usage = "usage: %prog [options] user@host[/resource] password"
     parser = OptionParser(usage=usage)
 
     (options, args) = parser.parse_args()
@@ -38,7 +38,7 @@ def parseArgs():
 def run():
     options, args = parseArgs()
     log.setup()
-    xmpp.debug.colors_enabled = False
+    xmpp.debug.colors_enabled = True
     ui = UI()
     jid = xmpp.JID(args[0])
     client = XMPPClient(ui, jid, args[1])

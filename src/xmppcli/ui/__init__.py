@@ -22,10 +22,33 @@ from .Layout import Layout
 
 class UI(object):
     palette = \
-       [("input", "light gray", "default"),
+    [
+        ("input", "light gray", "default"),
         ("status", "white", "dark blue"),
         ("status-hilite", "dark blue", "light gray"),
-        ]
+    ]
+
+    xmpppy_needle = chr(27) + "["
+    xmpppy_colors = \
+    {
+        "0" : "none",
+        "30" : "black",
+        "31" : "red",
+        "32" : "green",
+        "33" : "brown",
+        "34" : "blue",
+        "35" : "magenta",
+        "36" : "cyan",
+        "37" : "light_gray",
+        "30;1" : "dark_gray",
+        "31;1" : "bright_red",
+        "32;1" : "bright_green",
+        "33;1" : "yellow",
+        "34;1" : "bright_blue",
+        "35;1" : "purple",
+        "36;1" : "bright_cyan",
+        "37;1" : "white",
+    }
 
     def __init__(self):
         self.client = None
@@ -92,3 +115,23 @@ class UI(object):
 
     def clear(self):
         self.screen.clear()
+
+    @staticmethod
+    def convertXMPPYColor(buff):
+        idx = 0
+        oidx = 0
+        length = len(buff)
+        out = []
+        while idx > -1 and idx < length:
+            oidx = idx
+            idx = buff.find(UI.xmpppy_needle, idx)
+            if idx > -1:
+                out.append(buff[oidx:idx])
+                idx = idx + 2
+                cidx = buff.find("m", idx)
+                color = buff[idx:cidx]
+                out.append(UI.xmpppy_colors[color])
+                idx = cidx + 1
+            else:
+                out.append(buff[oidx:])
+        return "".join(out)

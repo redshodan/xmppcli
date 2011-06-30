@@ -68,7 +68,8 @@ class LogBuffer(TextBuffer):
         self.lo = layout
 
     def write(self, buff):
-        self.append(buff.rstrip("\r\n"))
+        from xmppcli.ui import UI
+        self.append(UI.convertXMPPYColor(buff.rstrip("\r\n")))
         self.lo.wake()
 
     def flush(self):
