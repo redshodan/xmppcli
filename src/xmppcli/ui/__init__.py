@@ -26,6 +26,25 @@ class UI(object):
         ("input", "light gray", "default"),
         ("status", "white", "dark blue"),
         ("status-hilite", "dark blue", "light gray"),
+
+        # XMPPPY color mappings
+        ("none", "default", "default"),
+        ("black", "black", "default"),
+        ("red", "dark red", "default"),
+        ("green", "dark green", "default"),
+        ("brown", "brown", "default"),
+        ("blue", "dark blue", "default"),
+        ("magenta", "dark magenta", "default"),
+        ("cyan", "dark cyan", "default"),
+        ("light_gray", "light gray", "default"),
+        ("dark_gray", "dark gray", "default"),
+        ("bright_red", "light red", "default"),
+        ("bright_green", "light green", "default"),
+        ("yellow", "yellow", "default"),
+        ("bright_blue", "light blue", "default"),
+        ("purple", "light magenta", "default"),
+        ("bright_cyan", "light cyan", "default"),
+        ("white", "white", "default"),
     ]
 
     xmpppy_needle = chr(27) + "["
@@ -122,16 +141,33 @@ class UI(object):
         oidx = 0
         length = len(buff)
         out = []
+        cur = None
         while idx > -1 and idx < length:
             oidx = idx
             idx = buff.find(UI.xmpppy_needle, idx)
+            found = False
             if idx > -1:
-                out.append(buff[oidx:idx])
-                idx = idx + 2
-                cidx = buff.find("m", idx)
-                color = buff[idx:cidx]
-                out.append(UI.xmpppy_colors[color])
-                idx = cidx + 1
-            else:
-                out.append(buff[oidx:])
-        return "".join(out)
+                try:
+                    if cur:
+                        cur.append(buff[oidx:idx])
+                        out.append(tuple(cur))
+                        cur = None
+                    else:
+                        out.append(buff[oidx:idx])
+                    midx = idx + 2
+                    cidx = buff.find("m", midx)
+                    color = buff[midx:cidx]
+                    pcolor = UI.xmpppy_colors[color]
+                    cur = [pcolor]
+                    idx = cidx + 1
+                    found = True
+                except:
+                    pass
+            if not found:
+                if cur:
+                    cur.append(buff[oidx:idx])
+                    out.append(tuple(cur))
+                    cur = None
+                else:
+                    out.append(buff[oidx:idx])
+        return out

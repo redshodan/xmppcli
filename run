@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export PYTHONPATH=./src
+
+rm -f xmppcli.log
+
+exec ./xmppcli test@localhost test
