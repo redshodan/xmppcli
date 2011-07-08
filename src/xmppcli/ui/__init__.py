@@ -164,6 +164,8 @@ class UI(object):
                 except:
                     pass
             if not found:
+                if idx == -1:
+                    idx = length
                 if cur:
                     cur.append(buff[oidx:idx])
                     out.append(tuple(cur))
