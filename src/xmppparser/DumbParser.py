@@ -14,8 +14,9 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import re, readline, types
+import re, types
 from . import *
+from python import cmd
 
 
 class DumbParser(object):
@@ -197,7 +198,7 @@ class DumbParser(object):
                 return [ret[0] + " "]
             else:
                 if self.last_non_space_c == ">":
-                    readline.insert_text("<")
+                    cmd.readline.insert_text("<")
                 return ret
         xmlns = elem.findMainNS()
         if self.state == self.STATE_NAME:

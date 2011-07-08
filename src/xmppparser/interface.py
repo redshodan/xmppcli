@@ -14,8 +14,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os, cmd, re, readline
+import os, re
+from python import cmd
 from xmppparser import *
+import rlinterface
+
+cmd.readline = rlinterface.readline
 
 
 __all__ = ["Interface", "StanzaHandler"]
@@ -72,15 +76,15 @@ class Interface(cmd.Cmd):
         self.handler = handler
         self.stream_info = stream_info
         self.rl_prompt = False
-        readline.set_startup_hook(self.rlStartup)
-        delims = readline.get_completer_delims()
+        cmd.readline.set_startup_hook(self.rlStartup)
+        delims = cmd.readline.get_completer_delims()
         delims = delims.replace(":", "")
         delims = delims.replace("/", "")
         delims = delims.replace("'", "")
         delims = delims.replace('"', "")
         delims = delims.replace('-', "")
         delims = delims.replace('#', "")
-        readline.set_completer_delims(delims)
+        cmd.readline.set_completer_delims(delims)
         self.roster = {}
 
         self.cmd_args = {}

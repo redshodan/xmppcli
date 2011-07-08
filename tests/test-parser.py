@@ -23,7 +23,7 @@ from xmppparser import Interface
 
 class Handler:
     def handleXML(self, xml):
-        print "handleXML:", xml
+        print "handleXML: '%s'" % xml
 
 if len(sys.argv) > 1:
     debug = True
