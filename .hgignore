@@ -1,2 +1,4 @@
 .*\.pyc
 xmppcli.log
+cmd/schema.pkl
+xsd/schema.pkl

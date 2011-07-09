@@ -51,7 +51,7 @@ def run():
     # xmppparser interface
     stream_info = {"hostname" : jid.getDomain(), "user" : jid.getNode(),
                    "resource" : jid.getResource(), "jid" : str(jid)}
-    parser = Interface(client, stream_info, "../xmppparser")
+    parser = Interface(client, stream_info, ".")
     ui.setInputParser(parser)
     def connectedCB():
         ui.setRoster(client.conn.Roster)

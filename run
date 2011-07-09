@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PYTHONPATH=./src:../xmppparser/src
+export PYTHONPATH=./src
 
 rm -f xmppcli.log
 
