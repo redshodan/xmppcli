@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='jabber:client'
+    xmlns='jabber:client'
+    elementFormDefault='qualified'>
+
+  <!--
+     *
+     * Presence
+     *
+    -->
+  <xs:element name='presence'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+       <xs:attribute name='type' use='optional' type='xs:string'/>
+       <xs:attribute name='priority' use='optional' type='xs:string'/>
+       <xs:attribute name='show' use='optional' type='xs:string'/>
+       <xs:attribute name='status' use='optional' type='xs:string'/>
+     </xs:complexType>
+  </xs:element>
+
+  <!-- Normal presence -->
+  <xs:element name='available'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+     </xs:complexType>
+  </xs:element>
+
+  <xs:element name='away'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+     </xs:complexType>
+  </xs:element>
+
+  <xs:element name='xa'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+     </xs:complexType>
+  </xs:element>
+
+  <xs:element name='dnd'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+     </xs:complexType>
+  </xs:element>
+
+  <xs:element name='unavailable'>
+     <xs:complexType>
+       <xs:attribute name='to' use='optional' type='xs:string'
+                     completer='rosterTo'/>
+     </xs:complexType>
+  </xs:element>
+
+  <!-- Roster presence -->
+  <xs:element name='subscribe'>
+     <xs:complexType>
+       <xs:attribute name='to' use='required' type='xs:string'
+                     completer='hostJid'/>
+     </xs:complexType>
+  </xs:element>
+
+
+  <!--
+     *
+     * Roster
+     *
+    -->
+  <xs:element name='roster'>
+     <xs:complexType>
+       <xs:attribute name='all' use='optional' type='xs:flag'/>
+     </xs:complexType>
+  </xs:element>
+
+</xs:schema>

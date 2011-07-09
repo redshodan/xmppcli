@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='http://jabber.org/protocol/shim'
+    xmlns='http://jabber.org/protocol/shim'
+    elementFormDefault='qualified'>
+
+  <xs:annotation>
+    <xs:documentation>
+      The protocol documented by this schema is defined in
+      XEP-0131: http://www.xmpp.org/extensions/xep-0131.html
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name='headers'>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref='header' minOccurs='0' maxOccurs='unbounded'/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name='header'>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base='xs:string'>
+          <xs:attribute name='name' use='required'>
+            <!-- Added the values submitted to the registrar -->
+            <xs:simpleType>
+              <xs:restriction base='xs:string'>
+                <xs:enumeration value='Accept'/>
+                <xs:enumeration value='Accept-Charset'/>
+                <xs:enumeration value='Accept-Encoding'/>
+                <xs:enumeration value='Accept-Language'/>
+                <xs:enumeration value='Accept-Ranges'/>
+                <xs:enumeration value='Age'/>
+                <xs:enumeration value='Alert-Info'/>
+                <xs:enumeration value='Allow'/>
+                <xs:enumeration value='Authentication-Info'/>
+                <xs:enumeration value='Cache-Control'/>
+                <xs:enumeration value='Call-ID'/>
+                <xs:enumeration value='Call-Info'/>
+                <xs:enumeration value='Classification'/>
+                <xs:enumeration value='Comments'/>
+                <xs:enumeration value='Connection'/>
+                <xs:enumeration value='Contact'/>
+                <xs:enumeration value='Content-Description'/>
+                <xs:enumeration value='Content-Disposition'/>
+                <xs:enumeration value='Content-Encoding'/>
+                <xs:enumeration value='Content-ID'/>
+                <xs:enumeration value='Content-Language'/>
+                <xs:enumeration value='Content-Length'/>
+                <xs:enumeration value='Content-Location'/>
+                <xs:enumeration value='Content-MD5'/>
+                <xs:enumeration value='Content-Range'/>
+                <xs:enumeration value='Content-Transfer-Encoding'/>
+                <xs:enumeration value='Content-Type'/>
+                <xs:enumeration value='Contributor'/>
+                <xs:enumeration value='Coverage'/>
+                <xs:enumeration value='Created'/>
+                <xs:enumeration value='Creator'/>
+                <xs:enumeration value='CSeq'/>
+                <xs:enumeration value='Date'/>
+                <xs:enumeration value='DateTime'/>
+                <xs:enumeration value='Description'/>
+                <xs:enumeration value='Distribute'/>
+                <xs:enumeration value='Error-Info'/>
+                <xs:enumeration value='ETag'/>
+                <xs:enumeration value='Expect'/>
+                <xs:enumeration value='Expires'/>
+                <xs:enumeration value='Format'/>
+                <xs:enumeration value='Host'/>
+                <xs:enumeration value='Identifier'/>
+                <xs:enumeration value='If-Match'/>
+                <xs:enumeration value='If-Modified-Since'/>
+                <xs:enumeration value='If-None-Match'/>
+                <xs:enumeration value='If-Range'/>
+                <xs:enumeration value='If-Unmodified-Since'/>
+                <xs:enumeration value='In-Reply-To'/>
+                <xs:enumeration value='Keywords'/>
+                <xs:enumeration value='Language'/>
+                <xs:enumeration value='Last-Modified'/>
+                <xs:enumeration value='Location'/>
+                <xs:enumeration value='Max-Forwards'/>
+                <xs:enumeration value='Message-ID'/>
+                <xs:enumeration value='MIME-Version'/>
+                <xs:enumeration value='Organization'/>
+                <xs:enumeration value='Pragma'/>
+                <xs:enumeration value='Priority'/>
+                <xs:enumeration value='Proxy-Authenticate'/>
+                <xs:enumeration value='Proxy-Authorization'/>
+                <xs:enumeration value='Publisher'/>
+                <xs:enumeration value='Range'/>
+                <xs:enumeration value='Received'/>
+                <xs:enumeration value='Record-Route'/>
+                <xs:enumeration value='References'/>
+                <xs:enumeration value='Referer'/>
+                <xs:enumeration value='Relation'/>
+                <xs:enumeration value='Reply-To'/>
+                <xs:enumeration value='Require'/>
+                <xs:enumeration value='Resent-Bcc'/>
+                <xs:enumeration value='Resent-Cc'/>
+                <xs:enumeration value='Resent-Date'/>
+                <xs:enumeration value='Resent-From'/>
+                <xs:enumeration value='Resent-Message-Id'/>
+                <xs:enumeration value='Resent-Sender'/>
+                <xs:enumeration value='Resent-To'/>
+                <xs:enumeration value='Retry-After'/>
+                <xs:enumeration value='Return-Path'/>
+                <xs:enumeration value='RFC2822Date'/>
+                <xs:enumeration value='Rights'/>
+                <xs:enumeration value='Route'/>
+                <xs:enumeration value='Sender'/>
+                <xs:enumeration value='Server'/>
+                <xs:enumeration value='Source'/>
+                <xs:enumeration value='Store'/>
+                <xs:enumeration value='Subject'/>
+                <xs:enumeration value='Supported'/>
+                <xs:enumeration value='TE'/>
+                <xs:enumeration value='Time'/>
+                <xs:enumeration value='Timestamp'/>
+                <xs:enumeration value='Title'/>
+                <xs:enumeration value='the'/>
+                <xs:enumeration value='Trailer'/>
+                <xs:enumeration value='Transfer-Encoding'/>
+                <xs:enumeration value='TTL'/>
+                <xs:enumeration value='Type'/>
+                <xs:enumeration value='Unsupported'/>
+                <xs:enumeration value='Upgrade'/>
+                <xs:enumeration value='Urgency'/>
+                <xs:enumeration value='User-Agent'/>
+                <xs:enumeration value='Vary'/>
+                <xs:enumeration value='Via'/>
+                <xs:enumeration value='Warning'/>
+                <xs:enumeration value='WWW-Authenticate'/>
+                <!-- Added values from XEP-0149 -->
+                <xs:enumeration value='Start'/>
+                <xs:enumeration value='Stop'/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

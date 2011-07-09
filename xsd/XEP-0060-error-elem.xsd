@@ -1,0 +1,38 @@
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='jabber:client'
+    xmlns='jabber:client'
+    elementFormDefault='qualified'>
+
+  <xs:element name='error'>
+    <xs:complexType>
+      <xs:sequence xmlns:err='urn:ietf:params:xml:ns:xmpp-stanzas'
+                   xmlns:pserr='http://jabber.org/protocol/pubsub#errors'>
+        <xs:element ref='pserr:closed-node'/>
+        <xs:element ref='pserr:configuration-required'/>
+        <xs:element ref='pserr:invalid-jid'/>
+        <xs:element ref='pserr:invalid-options'/>
+        <xs:element ref='pserr:invalid-payload'/>
+        <xs:element ref='pserr:invalid-subid'/>
+        <xs:element ref='pserr:item-forbidden'/>
+        <xs:element ref='pserr:item-required'/>
+        <xs:element ref='pserr:jid-required'/>
+        <xs:element ref='pserr:max-items-exceeded'/>
+        <xs:element ref='pserr:max-nodes-exceeded'/>
+        <xs:element ref='pserr:nodeid-required'/>
+        <xs:element ref='pserr:not-in-roster-group'/>
+        <xs:element ref='pserr:not-subscribed'/>
+        <xs:element ref='pserr:payload-too-big'/>
+        <xs:element ref='pserr:payload-required'/>
+        <xs:element ref='pserr:pending-subscription'/>
+        <xs:element ref='pserr:presence-subscription-required'/>
+        <xs:element ref='pserr:subid-required'/>
+        <xs:element ref='pserr:unsupported'/>
+        <xs:element ref='pserr:unsupported-access-model'/>
+        <xs:element ref='err:text'
+                    minOccurs='0'/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

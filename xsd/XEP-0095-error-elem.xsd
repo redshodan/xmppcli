@@ -1,0 +1,17 @@
+<xs:schema
+    xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='jabber:client'
+    xmlns='jabber:client'
+    elementFormDefault='qualified'>
+
+  <xs:element name='error'>
+    <xs:complexType>
+      <xs:sequence xmlns:err='urn:ietf:params:xml:ns:xmpp-stanzas'
+                   xmlns:si='http://jabber.org/protocol/si'>
+        <xs:element ref='si:bad-profile'/>
+        <xs:element ref='si:no-valid-streams'/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

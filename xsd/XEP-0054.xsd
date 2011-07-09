@@ -1,0 +1,524 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<xs:schema
+  xmlns:xs='http://www.w3.org/2001/XMLSchema'
+  targetNamespace='vcard-temp'
+  xmlns='vcard-temp'
+  elementFormDefault='qualified'>
+
+ <xs:element name='xCard'>
+  <xs:complexType>
+   <xs:sequence maxOccurs='unbounded'>
+    <xs:element ref='vCard'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='vCard'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:sequence>
+     <xs:element ref='VERSION'/>
+     <xs:element ref='FN'/>
+     <xs:element ref='N'/>
+    </xs:sequence>
+    <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+     <xs:element ref='NICKNAME' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='PHOTO' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='BDAY' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='ADR' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='LABEL' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='TEL' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='EMAIL' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='JABBERID' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='MAILER' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='TZ' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='GEO' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='TITLE' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='ROLE' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='LOGO' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='AGENT' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='ORG' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='CATEGORIES' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='NOTE' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='PRODID' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='REV' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='SORT-STRING' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='SOUND' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='UID' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='URL' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='CLASS' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='KEY' minOccurs='0' maxOccurs='1'/>
+     <xs:element ref='DESC' minOccurs='0' maxOccurs='1'/>
+    </xs:sequence>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='VERSION'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='FN'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='N'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='FAMILY' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='GIVEN' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='MIDDLE' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PREFIX' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='SUFFIX' minOccurs='0' maxOccurs='1'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='FAMILY'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='GIVEN'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='MIDDLE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='PREFIX'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='SUFFIX'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='NICKNAME'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='PHOTO'>
+  <xs:complexType>
+   <xs:choice>
+    <xs:sequence>
+     <xs:element ref='TYPE'/>
+     <xs:element ref='BINVAL'/>
+    </xs:sequence>
+    <xs:element ref='EXTVAL'/>
+   </xs:choice>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='BDAY'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='ADR'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='HOME' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='WORK' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='POSTAL' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PARCEL' minOccurs='0' maxOccurs='1'/>
+    <xs:choice minOccurs='0' maxOccurs='1'>
+     <xs:element ref='DOM'/>
+     <xs:element ref='INTL'/>
+    </xs:choice>
+    <xs:element ref='PREF' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='POBOX' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='EXTADD' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='STREET' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='LOCALITY' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='REGION' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PCODE' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='CTRY' minOccurs='0' maxOccurs='1'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='POBOX'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='EXTADD'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='STREET'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='LOCALITY'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='REGION'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='PCODE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='CTRY'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='LABEL'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='HOME' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='WORK' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='POSTAL' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PARCEL' minOccurs='0' maxOccurs='1'/>
+    <xs:choice minOccurs='0' maxOccurs='1'>
+     <xs:element ref='DOM'/>
+     <xs:element ref='INTL'/>
+    </xs:choice>
+    <xs:element ref='PREF' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='LINE' maxOccurs='unbounded'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='LINE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='TEL'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='HOME' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='WORK' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='VOICE' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='FAX' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PAGER' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='MSG' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='CELL' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='VIDEO' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='BBS' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='MODEM' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='ISDN' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PCS' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PREF' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='NUMBER'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='NUMBER'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='EMAIL'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='HOME' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='WORK' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='INTERNET' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='PREF' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='X400' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='USERID'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='USERID'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='JABBERID'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='MAILER'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='TZ'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='GEO'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='LAT'/>
+    <xs:element ref='LON'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='LAT'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='LON'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='TITLE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='ROLE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='LOGO'>
+  <xs:complexType>
+   <xs:choice>
+    <xs:sequence>
+     <xs:element ref='TYPE'/>
+     <xs:element ref='BINVAL'/>
+    </xs:sequence>
+    <xs:element ref='EXTVAL'/>
+   </xs:choice>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='AGENT'>
+  <xs:complexType>
+   <xs:choice>
+    <xs:element ref='vCard'/>
+    <xs:element ref='EXTVAL'/>
+   </xs:choice>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='ORG'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='ORGNAME'/>
+    <xs:element ref='ORGUNIT' minOccurs='0' maxOccurs='unbounded'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='ORGNAME'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='ORGUNIT'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='CATEGORIES'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='KEYWORD' maxOccurs='unbounded'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='KEYWORD'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='NOTE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='PRODID'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='REV'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='SORT-STRING'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='SOUND'>
+  <xs:complexType>
+   <xs:choice>
+    <xs:element ref='PHONETIC'/>
+    <xs:element ref='BINVAL'/>
+    <xs:element ref='EXTVAL'/>
+   </xs:choice>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='PHONETIC'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='UID'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='URL'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='DESC'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='CLASS'>
+  <xs:complexType>
+   <xs:choice>
+    <xs:element ref='PUBLIC'/>
+    <xs:element ref='PRIVATE'/>
+    <xs:element ref='CONFIDENTIAL'/>
+   </xs:choice>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='PUBLIC'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='PRIVATE'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='CONFIDENTIAL'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='KEY'>
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref='TYPE' minOccurs='0' maxOccurs='1'/>
+    <xs:element ref='CRED'/>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='CRED'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='HOME'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='WORK'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='POSTAL'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='PARCEL'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='DOM'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='INTL'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='PREF'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='VOICE'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='FAX'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='PAGER'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='MSG'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='CELL'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='VIDEO'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='BBS'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='MODEM'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='ISDN'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='PCS'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='INTERNET'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='X400'>
+  <xs:complexType/>
+ </xs:element>
+
+ <xs:element name='TYPE'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='BINVAL'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+
+ <xs:element name='EXTVAL'>
+  <xs:complexType mixed='true'>
+  </xs:complexType>
+ </xs:element>
+</xs:schema>
