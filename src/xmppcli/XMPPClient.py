@@ -82,7 +82,7 @@ class XMPPClient(object):
     ## UI handlers
     ##
     def handleXML(self, xml):
-        print "handleXML:", xml
+        log.debug("handleXML: " + xml)
         self.send(xml)
 
     def handleCmd(self, name, args):

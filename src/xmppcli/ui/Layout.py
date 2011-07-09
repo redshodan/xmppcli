@@ -24,6 +24,7 @@ from xmppcli import log
 
 class Layout(object):
     def __init__(self, ui):
+        self.iparser = None
         self.ui = ui
         self.roster = Roster()
         ### StatusBar
@@ -49,6 +50,10 @@ class Layout(object):
                                             ("relative", 50), "top",
                                             ("relative", 100))
         self.fullsizes = [self.roster_overlay]
+
+    def setInputParser(self, parser):
+        self.iparser = parser
+        self.input.setInputParser(parser)
 
     def keypress(self, size, key):
         if self.top in self.fullsizes:

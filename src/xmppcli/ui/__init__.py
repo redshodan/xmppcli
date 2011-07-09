@@ -71,6 +71,7 @@ class UI(object):
 
     def __init__(self):
         self.client = None
+        self.iparser = None
         self.running = True
         self.pipe = os.pipe()
         fcntl.fcntl(self.pipe[0], fcntl.F_SETFL, os.O_NONBLOCK)
@@ -85,6 +86,10 @@ class UI(object):
 
     def setRoster(self, roster):
         self.layout.setRoster(roster)
+
+    def setInputParser(self, parser):
+        self.iparser = parser
+        self.layout.setInputParser(parser)
 
     def run(self):
         self.screen.run_wrapper(self._run)

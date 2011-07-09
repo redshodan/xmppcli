@@ -20,4 +20,30 @@ from xmppcli import log
 class Input(urwid.Edit):
     def __init__(self, layout):
         urwid.Edit.__init__(self)
+        self.iparser = None
         self.lo = layout
+
+    def setInputParser(self, parser):
+        self.iparser = parser
+
+    def rlShowComps(self, comps):
+        log.debug("rlShowComps: " + str(comps))
+
+    def rlRedisplay(self):
+        log.debug("rlRedisplay")
+
+    def keypress(self, size, key):
+        log.debug("key: " + key)
+        if not self.edit_text or not len(self.edit_text):
+            self.iparser.startInput()
+        ret = urwid.Edit.keypress(self, size, key)
+
+        if key == "tab":
+            self.iparser.handleInput("\t")
+            # key = "\t"
+        
+        elif key == "enter":
+            self.iparser.endInput()
+        else:
+            self.iparser.handleInput(key)
+        return ret
