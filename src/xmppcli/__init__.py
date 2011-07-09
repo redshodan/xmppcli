@@ -37,7 +37,7 @@ def parseArgs():
 def run():
     options, args = parseArgs()
     log.setup()
-    xmpp.debug.colors_enabled = False
+    xmpp.debug.colors_enabled = True
     # urwid based user interface
     ui = UI()
     jid = xmpp.JID(args[0])

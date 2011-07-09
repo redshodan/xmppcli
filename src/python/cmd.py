@@ -46,9 +46,7 @@ they automatically support Emacs-like command history and editing features.
 """
 
 import string
-
-
-readline = None
+from xmppparser import rlinterface
 
 
 __all__ = ["Cmd"]
@@ -112,10 +110,10 @@ class Cmd:
 
         self.preloop()
         if self.use_rawinput and self.completekey:
-            self.old_completer = readline.get_completer()
-            readline.set_completer(self.complete)
-            readline.parse_and_bind(self.completekey+": complete")
-            readline.set_stdin(self.stdin)
+            self.old_completer = rlinterface.readline.get_completer()
+            rlinterface.readline.set_completer(self.complete)
+            rlinterface.readline.parse_and_bind(self.completekey+": complete")
+            rlinterface.readline.set_stdin(self.stdin)
         try:
             if intro is not None:
                 self.intro = intro
@@ -128,7 +126,7 @@ class Cmd:
                 else:
                     if self.use_rawinput:
                         try:
-                            line = readline.readline(self.prompt)
+                            line = rlinterface.readline.readline(self.prompt)
                         except EOFError:
                             line = 'EOF'
                     else:
@@ -145,17 +143,17 @@ class Cmd:
             self.postloop()
         finally:
             if self.use_rawinput and self.completekey:
-                readline.set_completer(self.old_completer)
+                rlinterface.readline.set_completer(self.old_completer)
 
     def startInput(self):
-        readline.set_completer(self.complete)
-        readline.startInput()
+        rlinterface.readline.set_completer(self.complete)
+        rlinterface.readline.startInput()
 
     def handleInput(self, string):
-        readline.handleInput(string)
+        rlinterface.readline.handleInput(string)
 
     def endInput(self):
-        line = readline.endInput()
+        line = rlinterface.readline.endInput()
         line = line.rstrip('\r\n')
         line = self.precmd(line)
         stop = self.onecmd(line)
@@ -269,14 +267,14 @@ class Cmd:
         """
         # print "complete", text, state
         if state == 0:
-            origline = readline.get_line_buffer()
+            origline = rlinterface.readline.get_line_buffer()
             # print "origline:", len(origline), ":", origline
             line = origline.lstrip()
             stripped = len(origline) - len(line)
-            # print "got begidx", readline.get_begidx()
-            # print "got endidx", readline.get_endidx()
-            begidx = readline.get_begidx() - stripped
-            endidx = readline.get_endidx() - stripped
+            # print "got begidx", rlinterface.readline.get_begidx()
+            # print "got endidx", rlinterface.readline.get_endidx()
+            begidx = rlinterface.readline.get_begidx() - stripped
+            endidx = rlinterface.readline.get_endidx() - stripped
             if begidx>0:
                 cmd, args, foo = self.parseline(line)
                 if cmd == '':

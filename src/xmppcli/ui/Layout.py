@@ -67,6 +67,8 @@ class Layout(object):
             log.debug("window resize")
             self.ui.refreshSize()
             self.ui.clear()
+        elif key == "ctrl l":
+            self.ui.clear()
         else:
             key = self.top.keypress(pass_size, key)
             if key:

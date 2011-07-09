@@ -39,10 +39,9 @@ class Input(urwid.Edit):
         ret = urwid.Edit.keypress(self, size, key)
 
         if key == "tab":
-            self.iparser.handleInput("\t")
-            # key = "\t"
+            key = "\t"
         
-        elif key == "enter":
+        if key == "enter":
             self.iparser.endInput()
         else:
             self.iparser.handleInput(key)

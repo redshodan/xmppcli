@@ -28,7 +28,7 @@ class RLInterface(object):
     def __init__(self, show_comps_cb=None, redisplay_cb=None):
         self.stdin = sys.stdin.fileno()
         if not show_comps_cb:
-            self.show_comps_cb = self.showComps
+            self.show_comps_cb = self._showComps
         else:
             self.show_comps_cb = show_comps_cb
         if not redisplay_cb:
@@ -148,7 +148,7 @@ class RLInterface(object):
         print "_doDel"
         pass
 
-    def showComps(self, comps):
+    def _showComps(self, comps):
         os.write(sys.stdout.fileno(), "\n" + str(comps) + "\n")
         
     def redisplay(self):
