@@ -177,7 +177,7 @@ class Interface(cmd.Cmd):
     @logEx
     def default(self, line):
         if line == "EOF":
-            print
+            # print
             return True
         self.handler.handleXML(line)
 

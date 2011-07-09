@@ -25,8 +25,16 @@ class RLInterface(object):
     DOWN_ARROW = "\033[[B"
     DEL = "\177"
     
-    def __init__(self, show_comps_cb):
-        self.show_comps_cb = show_comps_cb
+    def __init__(self, show_comps_cb=None, redisplay_cb=None):
+        self.stdin = sys.stdin.fileno()
+        if not show_comps_cb:
+            self.show_comps_cb = self.showComps
+        else:
+            self.show_comps_cb = show_comps_cb
+        if not redisplay_cb:
+            self.redisplay_cb = self._redisplay
+        else:
+            self.redisplay_cb = redisplay_cb
         self.completer = None
         self._line_buffer = []
         self._line_txt = None
@@ -65,36 +73,44 @@ class RLInterface(object):
 
     def readline(self, prompt):
         try:
-            return self._readline(prompt)
+            self.startInput()
+            self.prompt = prompt
+            os.write(sys.stdout.fileno(), prompt)
+            self.line_buffer = []
+            while True:
+                c = os.read(self.stdin, 1)
+                if len(c) == 0:
+                    break
+                elif c == "\n":
+                    os.write(sys.stdout.fileno(), c)
+                    break
+                elif c == self.DEL:
+                    self._doDel()
+                else:
+                    os.write(sys.stdout.fileno(), c)
+                self.handleInput(c)
+            return self.line_txt
         except Exception, e:
             print
             import traceback
             traceback.print_exc()
 
-    def _readline(self, prompt):
+    def startInput(self):
         if self.startup_hook:
             self.startup_hook()
-        self.prompt = prompt
-        os.write(sys.stdout.fileno(), prompt)
 
-        fd = self.stdin.fileno()
-        self.line_buffer = []
-        while True:
-            c = os.read(fd, 1)
+    def handleInput(self, string):
+        for c in string:
             if c == '\t':
                 self._doComplete()
-            elif len(c) == 0:
-                break
-            elif c == "\n":
-                os.write(sys.stdout.fileno(), c)
-                break
-            elif c == self.DEL:
-                self._doDel()
             else:
                 self.line_buffer.append(c)
                 self.line_txt = None
-                os.write(sys.stdout.fileno(), c)
-        return self.line_txt
+
+    def endInput(self):
+        txt = self.line_txt
+        self.line_buffer = []
+        return txt
 
     def _doComplete(self):
         length = len(self.line_txt)
@@ -118,43 +134,42 @@ class RLInterface(object):
             count = count + 1
             if ret:
                 comps.append(ret)
+        # Choice selected, apply it.
         if len(comps) == 1:
             self.line_buffer[self.begidx:self.endidx] = comps[0]
             self.begidx = self.begidx + len(comps[0])
             self.endidx = self.begidx
             self.line_txt = None
         else:
-            os.write(sys.stdout.fileno(), str(comps) + "\n")
+            self.show_comps_cb(comps)
         self.redisplay()
 
     def _doDel(self):
         print "_doDel"
         pass
+
+    def showComps(self, comps):
+        os.write(sys.stdout.fileno(), "\n" + str(comps) + "\n")
         
     def redisplay(self):
-        os.write(sys.stdout.fileno(), self.prompt + self.line_txt)
+        self.redisplay_cb()
+
+    def _redisplay(self):
+        os.write(sys.stdout.fileno(), "\n" + self.prompt + self.line_txt)
     
     def set_stdin(self, stdin):
-        self.stdin = stdin
+        if isinstance(stdin, types.FileType):
+            self.stdin = stdin.fileno()
+        else:
+            self.stdin = stdin
 
-        try:
-            self.tty = os.open(os.ttyname(self.stdin.fileno()), os.O_RDWR)
-            self.orig_tty = termios.tcgetattr(self.tty)
-            new = termios.tcgetattr(self.tty)
-            # new[3] = new[3] & ~(termios.ICANON)
-            # new[0] = new[0] | termios.IGNPAR
-            # new[0] = new[0] & ~(termios.ISTRIP|termios.INLCR|termios.IGNCR|
-            #                     termios.ICRNL|termios.IXON|termios.IXANY|
-            #                     termios.IXOFF)
-            new[3] = new[3] & ~(termios.ICANON|termios.ECHO|
-                                termios.ECHOE|termios.ECHOK|
-                                termios.IEXTEN|termios.ECHONL)
-            # new[1] = new[1] & ~termios.OPOST
-            termios.tcsetattr(self.tty, termios.TCSANOW, new)
-        except Exception, e:
-            print
-            import traceback
-            traceback.print_exc()
+        self.tty = os.open(os.ttyname(self.stdin), os.O_RDWR)
+        self.orig_tty = termios.tcgetattr(self.tty)
+        new = termios.tcgetattr(self.tty)
+        new[3] = new[3] & ~(termios.ICANON|termios.ECHO|
+                            termios.ECHOE|termios.ECHOK|
+                            termios.IEXTEN|termios.ECHONL)
+        termios.tcsetattr(self.tty, termios.TCSANOW, new)
 
     def get_line_buffer(self):
         return self.line_txt
@@ -166,7 +181,7 @@ class RLInterface(object):
         return self.endidx
 
     def insert_text(self, txt):
-        print "insert_text", txt
+        # print "insert_text", txt
         for c in txt:
             self.line_buffer.append(c)
         self.line_txt = None
@@ -184,7 +199,7 @@ class RLInterface(object):
         return self.delims
 
 
-rli = RLInterface(None)
+rli = RLInterface()
 
 import readline
 rlm = readline
@@ -196,4 +211,4 @@ rlm.set_stdin = set_stdin
 
 readline = rli
 # readline = rlm
-print "readline:", readline
+# print "readline:", readline

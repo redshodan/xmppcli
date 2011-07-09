@@ -145,11 +145,21 @@ class Cmd:
             self.postloop()
         finally:
             if self.use_rawinput and self.completekey:
-                try:
-                    readline.set_completer(self.old_completer)
-                except ImportError:
-                    pass
+                readline.set_completer(self.old_completer)
 
+    def startInput(self):
+        readline.set_completer(self.complete)
+        readline.startInput()
+
+    def handleInput(self, string):
+        readline.handleInput(string)
+
+    def endInput(self):
+        line = readline.endInput()
+        line = line.rstrip('\r\n')
+        line = self.precmd(line)
+        stop = self.onecmd(line)
+        stop = self.postcmd(stop, line)
 
     def precmd(self, line):
         """Hook method executed just before the command line is
@@ -178,7 +188,7 @@ class Cmd:
         the arguments.  Returns a tuple containing (command, args, line).
         'command' and 'args' may be None if the line couldn't be parsed.
         """
-        print "parseline", line
+        # print "parseline", line
         line = line.strip()
         if not line:
             return None, None, line
@@ -257,14 +267,14 @@ class Cmd:
         If a command has not been entered, then complete against command list.
         Otherwise try to call complete_<command> to get list of completions.
         """
-        print "complete", text, state
+        # print "complete", text, state
         if state == 0:
             origline = readline.get_line_buffer()
-            print "origline:", len(origline), ":", origline
+            # print "origline:", len(origline), ":", origline
             line = origline.lstrip()
             stripped = len(origline) - len(line)
-            print "got begidx", readline.get_begidx()
-            print "got endidx", readline.get_endidx()
+            # print "got begidx", readline.get_begidx()
+            # print "got endidx", readline.get_endidx()
             begidx = readline.get_begidx() - stripped
             endidx = readline.get_endidx() - stripped
             if begidx>0:
@@ -282,7 +292,7 @@ class Cmd:
             else:
                 compfunc = self.completenames
             self.completion_matches = compfunc(text, line, begidx, endidx)
-            print "completion_matches", self.completion_matches
+            # print "completion_matches", self.completion_matches
         try:
             return self.completion_matches[state]
         except IndexError:
